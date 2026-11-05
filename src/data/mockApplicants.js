@@ -1,0 +1,287 @@
+// Data dummy calon santri untuk prototipe PPDB Darul Harumain
+// Seluruh data bersifat fiktif untuk keperluan demonstrasi antarmuka front-end.
+
+export const mockApplicants = [
+  {
+    id: 'DH-2026-00128',
+    name: 'Ahmad Fauzan Pratama',
+    gender: 'Laki-laki',
+    nisn: '0087654321',
+    nik: '3201123456780001',
+    birthPlace: 'Bogor',
+    birthDate: '15 Maret 2012',
+    school: 'MI Al-Hidayah Kota Bogor',
+    program: 'Tsanawiyah (MTs)',
+    track: 'Reguler',
+    date: '22 Okt 2026',
+    status: 'Terverifikasi',
+    pay: 'Lunas',
+    initials: 'AF',
+    color: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300',
+    phone: '0812-3456-7890',
+    parentName: 'H. Muhammad Yusuf',
+    parentPhone: '0812-9876-5432',
+    parentJob: 'Wiraswasta',
+    address: 'Jl. Pesantren No. 14, Bogor Barat, Jawa Barat',
+    completeness: 100,
+    documents: [
+      { name: 'Kartu Keluarga (KK)', status: 'Valid', file: 'kk_ahmad_fauzan.pdf', size: '1.2 MB' },
+      { name: 'Akta Kelahiran', status: 'Valid', file: 'akta_ahmad_fauzan.pdf', size: '850 KB' },
+      { name: 'Ijazah / SKL Sementara', status: 'Valid', file: 'skl_mi_alhidayah.pdf', size: '1.4 MB' },
+      { name: 'Pas Foto 3x4 (Latar Biru)', status: 'Valid', file: 'pas_foto_ahmad.jpg', size: '640 KB' },
+      { name: 'Surat Keterangan Sehat', status: 'Valid', file: 'surat_sehat_puskesmas.pdf', size: '420 KB' }
+    ],
+    selectionScores: {
+      quran: 92,
+      academic: 88,
+      interview: 90,
+      finalScore: 90.2,
+      result: 'Lulus'
+    },
+    dormitory: {
+      building: 'Asrama Putra - Gedung Al-Farabi',
+      room: 'Kamar A-204',
+      status: 'Ditempatkan'
+    }
+  },
+  {
+    id: 'DH-2026-00127',
+    name: 'Siti Aisyah Humaira',
+    gender: 'Perempuan',
+    nisn: '0091234567',
+    nik: '3201123456780002',
+    birthPlace: 'Sukabumi',
+    birthDate: '24 Mei 2012',
+    school: 'SDN Sukamaju 02',
+    program: 'Tsanawiyah (MTs)',
+    track: 'Reguler',
+    date: '22 Okt 2026',
+    status: 'Menunggu berkas',
+    pay: 'Belum bayar',
+    initials: 'SA',
+    color: 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300',
+    phone: '0857-1234-9988',
+    parentName: 'Drs. Rahmat Santoso',
+    parentPhone: '0857-8899-1122',
+    parentJob: 'PNS / Guru',
+    address: 'Jl. Melati Indah No. 5, Baros, Sukabumi',
+    completeness: 60,
+    documents: [
+      { name: 'Kartu Keluarga (KK)', status: 'Valid', file: 'kk_aisyah.pdf', size: '1.1 MB' },
+      { name: 'Akta Kelahiran', status: 'Menunggu', file: 'akta_aisyah_scan.pdf', size: '900 KB' },
+      { name: 'Ijazah / SKL Sementara', status: 'Belum unggah', file: null, size: '-' },
+      { name: 'Pas Foto 3x4 (Latar Biru)', status: 'Valid', file: 'foto_aisyah.jpg', size: '512 KB' },
+      { name: 'Surat Keterangan Sehat', status: 'Belum unggah', file: null, size: '-' }
+    ],
+    selectionScores: {
+      quran: null,
+      academic: null,
+      interview: null,
+      finalScore: null,
+      result: 'Belum Dijadwalkan'
+    },
+    dormitory: null
+  },
+  {
+    id: 'DH-2026-00126',
+    name: 'Muhammad Rizky Ramadhan',
+    gender: 'Laki-laki',
+    nisn: '0089876543',
+    nik: '3201123456780003',
+    birthPlace: 'Depok',
+    birthDate: '10 November 2011',
+    school: 'MI Nurul Iman Sawangan',
+    program: 'Tsanawiyah (MTs)',
+    track: 'Tahfidz Prestasi',
+    date: '21 Okt 2026',
+    status: 'Perlu perbaikan',
+    pay: 'Menunggu verifikasi',
+    initials: 'MR',
+    color: 'bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300',
+    phone: '0813-8877-6655',
+    parentName: 'Hendri Gunawan, S.T.',
+    parentPhone: '0813-2233-4455',
+    parentJob: 'Karyawan Swasta',
+    address: 'Perum Grand Sawangan No. 8B, Sawangan, Depok',
+    completeness: 80,
+    documents: [
+      { name: 'Kartu Keluarga (KK)', status: 'Valid', file: 'kk_rizky.pdf', size: '1.5 MB' },
+      { name: 'Akta Kelahiran', status: 'Perlu perbaikan', note: 'Foto akta buram/terpotong, mohon unggah ulang versi jelas', file: 'akta_rizky_blur.jpg', size: '420 KB' },
+      { name: 'Ijazah / SKL Sementara', status: 'Valid', file: 'skl_mi_nuruliman.pdf', size: '1.3 MB' },
+      { name: 'Pas Foto 3x4 (Latar Biru)', status: 'Valid', file: 'pasfoto_rizky.jpg', size: '600 KB' },
+      { name: 'Sertifikat Tahfidz (3 Juz)', status: 'Valid', file: 'sertifikat_tahfidz_rizky.pdf', size: '2.1 MB' }
+    ],
+    selectionScores: {
+      quran: 88,
+      academic: 82,
+      interview: null,
+      finalScore: 85.0,
+      result: 'Terjadwal'
+    },
+    dormitory: null
+  },
+  {
+    id: 'DH-2026-00125',
+    name: 'Nurul Hidayah Al-Zahra',
+    gender: 'Perempuan',
+    nisn: '0086543210',
+    nik: '3201123456780004',
+    birthPlace: 'Cianjur',
+    birthDate: '02 Februari 2012',
+    school: 'SDIT Al-Falah',
+    program: 'Aliyah (MA)',
+    track: 'Reguler',
+    date: '21 Okt 2026',
+    status: 'Terverifikasi',
+    pay: 'Lunas',
+    initials: 'NH',
+    color: 'bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300',
+    phone: '0878-9900-1122',
+    parentName: 'H. Lukman Hakim',
+    parentPhone: '0878-1122-3344',
+    parentJob: 'Pedagang',
+    address: 'Jl. Raya Cipanas No. 89, Cipanas, Cianjur',
+    completeness: 100,
+    documents: [
+      { name: 'Kartu Keluarga (KK)', status: 'Valid', file: 'kk_nurul_hidayah.pdf', size: '1.0 MB' },
+      { name: 'Akta Kelahiran', status: 'Valid', file: 'akta_nurul.pdf', size: '820 KB' },
+      { name: 'Ijazah / SKL Sementara', status: 'Valid', file: 'ijazah_sdit_alfalah.pdf', size: '1.6 MB' },
+      { name: 'Pas Foto 3x4 (Latar Biru)', status: 'Valid', file: 'foto_nurul.jpg', size: '700 KB' },
+      { name: 'Surat Keterangan Sehat', status: 'Valid', file: 'surat_sehat_rsud.pdf', size: '540 KB' }
+    ],
+    selectionScores: {
+      quran: 95,
+      academic: 90,
+      interview: 92,
+      finalScore: 92.5,
+      result: 'Lulus'
+    },
+    dormitory: {
+      building: 'Asrama Putri - Gedung Khadijah',
+      room: 'Kamar B-102',
+      status: 'Ditempatkan'
+    }
+  },
+  {
+    id: 'DH-2026-00124',
+    name: 'Abdul Rahman Al-Ghifari',
+    gender: 'Laki-laki',
+    nisn: '0092345678',
+    nik: '3201123456780005',
+    birthPlace: 'Bogor',
+    birthDate: '19 Juli 2011',
+    school: 'SDN Cibinong 01',
+    program: 'Tsanawiyah (MTs)',
+    track: 'Reguler',
+    date: '20 Okt 2026',
+    status: 'Dalam seleksi',
+    pay: 'Lunas',
+    initials: 'AR',
+    color: 'bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300',
+    phone: '0812-7788-9900',
+    parentName: 'Agus Salim',
+    parentPhone: '0812-4455-6677',
+    parentJob: 'Buruh Industri',
+    address: 'Kp. Muara RT 03/05, Cibinong, Kab. Bogor',
+    completeness: 100,
+    documents: [
+      { name: 'Kartu Keluarga (KK)', status: 'Valid', file: 'kk_abdul_rahman.pdf', size: '980 KB' },
+      { name: 'Akta Kelahiran', status: 'Valid', file: 'akta_abdul.pdf', size: '740 KB' },
+      { name: 'Ijazah / SKL Sementara', status: 'Valid', file: 'skl_cibinong.pdf', size: '1.1 MB' },
+      { name: 'Pas Foto 3x4 (Latar Biru)', status: 'Valid', file: 'pasfoto_abdul.jpg', size: '610 KB' },
+      { name: 'Surat Keterangan Sehat', status: 'Valid', file: 'surat_sehat_abdul.pdf', size: '480 KB' }
+    ],
+    selectionScores: {
+      quran: 84,
+      academic: 76,
+      interview: 80,
+      finalScore: 80.0,
+      result: 'Daftar Tunggu'
+    },
+    dormitory: null
+  },
+  {
+    id: 'DH-2026-00123',
+    name: 'Fathimah Az-Zahro',
+    gender: 'Perempuan',
+    nisn: '0081122334',
+    nik: '3201123456780006',
+    birthPlace: 'Sukabumi',
+    birthDate: '08 Januari 2012',
+    school: 'MI Tarbiyatul Islamiyah',
+    program: 'Tsanawiyah (MTs)',
+    track: 'Reguler',
+    date: '19 Okt 2026',
+    status: 'Terverifikasi',
+    pay: 'Lunas',
+    initials: 'FA',
+    color: 'bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300',
+    phone: '0858-3344-5566',
+    parentName: 'Deden Solihin',
+    parentPhone: '0858-7788-9911',
+    parentJob: 'Petani Modern',
+    address: 'Cisaat, Sukabumi, Jawa Barat',
+    completeness: 100,
+    documents: [
+      { name: 'Kartu Keluarga (KK)', status: 'Valid', file: 'kk_fathimah.pdf', size: '1.3 MB' },
+      { name: 'Akta Kelahiran', status: 'Valid', file: 'akta_fathimah.pdf', size: '910 KB' },
+      { name: 'Ijazah / SKL Sementara', status: 'Valid', file: 'ijazah_mi_tarbiyah.pdf', size: '1.5 MB' },
+      { name: 'Pas Foto 3x4 (Latar Biru)', status: 'Valid', file: 'foto_fathimah.jpg', size: '540 KB' },
+      { name: 'Surat Keterangan Sehat', status: 'Valid', file: 'surat_dokter.pdf', size: '390 KB' }
+    ],
+    selectionScores: {
+      quran: 90,
+      academic: 86,
+      interview: 88,
+      finalScore: 88.0,
+      result: 'Lulus'
+    },
+    dormitory: {
+      building: 'Asrama Putri - Gedung Khadijah',
+      room: 'Kamar B-105',
+      status: 'Ditempatkan'
+    }
+  },
+  {
+    id: 'DH-2026-00122',
+    name: 'Bilal Habasyi Siregar',
+    gender: 'Laki-laki',
+    nisn: '0097788990',
+    nik: '3201123456780007',
+    birthPlace: 'Medan',
+    birthDate: '29 Agustus 2011',
+    school: 'SD IT Madani',
+    program: 'Takhasus Tahfidz',
+    track: 'Beasiswa Yatim/Dhuafa',
+    date: '18 Okt 2026',
+    status: 'Terverifikasi',
+    pay: 'Lunas',
+    initials: 'BH',
+    color: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300',
+    phone: '0821-6677-8899',
+    parentName: 'Alm. Siregar / Ibu Nurhayati',
+    parentPhone: '0821-9988-7766',
+    parentJob: 'Ibu Rumah Tangga',
+    address: 'Jl. Merdeka No. 22, Medan Timur',
+    completeness: 100,
+    documents: [
+      { name: 'Kartu Keluarga (KK)', status: 'Valid', file: 'kk_bilal.pdf', size: '1.2 MB' },
+      { name: 'Akta Kelahiran', status: 'Valid', file: 'akta_bilal.pdf', size: '800 KB' },
+      { name: 'Ijazah / SKL Sementara', status: 'Valid', file: 'ijazah_sdit_madani.pdf', size: '1.7 MB' },
+      { name: 'Pas Foto 3x4 (Latar Biru)', status: 'Valid', file: 'foto_bilal.jpg', size: '620 KB' },
+      { name: 'Surat Keterangan Tidak Mampu (SKTM)', status: 'Valid', file: 'sktm_kelurahan.pdf', size: '750 KB' }
+    ],
+    selectionScores: {
+      quran: 96,
+      academic: 85,
+      interview: 94,
+      finalScore: 92.8,
+      result: 'Lulus'
+    },
+    dormitory: {
+      building: 'Asrama Putra - Gedung Ibnu Sina (Tahfidz)',
+      room: 'Kamar T-101',
+      status: 'Ditempatkan'
+    }
+  }
+]

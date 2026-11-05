@@ -94,9 +94,8 @@ export function RegistrationManagementPage({
           </div>
           <div className="mt-1 h-1.5 rounded-full bg-slate-100 dark:bg-white/10">
             <div
-              className={`h-full rounded-full ${
-                (a.completeness || 80) === 100 ? 'bg-emerald-500' : 'bg-brand-500'
-              }`}
+              className={`h-full rounded-full ${(a.completeness || 80) === 100 ? 'bg-emerald-500' : 'bg-brand-500'
+                }`}
               style={{ width: `${a.completeness || 80}%` }}
             />
           </div>
@@ -113,9 +112,8 @@ export function RegistrationManagementPage({
       key: 'pay',
       render: (a) => (
         <span
-          className={`text-xs font-semibold ${
-            a.pay === 'Lunas' ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400'
-          }`}
+          className={`text-xs font-semibold ${a.pay === 'Lunas' ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400'
+            }`}
         >
           {a.pay}
         </span>

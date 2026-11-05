@@ -1,1 +1,17 @@
-.node_module
+# Dependencies
+node_modules/
+
+# Build
+dist/
+dist-ssr/
+
+# Environment
+.env
+.env.*
+
+# Editor
+.vscode/
+.idea/
+
+# Logs
+*.log

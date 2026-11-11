@@ -23,7 +23,7 @@ import { mockApplicants } from './data/mockApplicants'
 import { mockUsers, mockRoles } from './data/mockUsers'
 
 export default function App() {
-  const [authView, setAuthView] = useState('app') // 'landing' | 'login' | 'register' | 'app'
+  const [authView, setAuthView] = useState('landing') // Default langsung ke Landing Page saat web pertama kali dibuka
   const [activeModule, setActiveModule] = useState('Dashboard')
   const [dark, setDark] = useState(false)
   const [toast, setToast] = useState(null)

@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { AppShell } from './components/layout/AppShell'
+import { LandingPage } from './pages/landing/LandingPage'
 import { LoginPage } from './pages/auth/LoginPage'
 import { RegisterPage } from './pages/auth/RegisterPage'
 import { ForgotPasswordModal } from './pages/auth/ForgotPasswordModal'
@@ -12,6 +13,7 @@ import { FinancePage } from './pages/finance/FinancePage'
 import { ExamManagementPage } from './pages/exam/ExamManagementPage'
 import { DormitoryPage } from './pages/dormitory/DormitoryPage'
 import { ReportsPage } from './pages/reports/ReportsPage'
+import { ExecutiveDashboardPage } from './pages/executive/ExecutiveDashboardPage'
 import { MasterDataPage } from './pages/master/MasterDataPage'
 import { NotificationGatewayPage } from './pages/notifications/NotificationGatewayPage'
 import { HelpdeskPage } from './pages/helpdesk/HelpdeskPage'
@@ -21,7 +23,7 @@ import { mockApplicants } from './data/mockApplicants'
 import { mockUsers, mockRoles } from './data/mockUsers'
 
 export default function App() {
-  const [authView, setAuthView] = useState('app') // 'app' | 'login' | 'register'
+  const [authView, setAuthView] = useState('app') // 'landing' | 'login' | 'register' | 'app'
   const [activeModule, setActiveModule] = useState('Dashboard')
   const [dark, setDark] = useState(false)
   const [toast, setToast] = useState(null)
@@ -86,8 +88,8 @@ export default function App() {
   }
 
   const handleLogout = () => {
-    setAuthView('login')
-    notify('Anda telah keluar dari sesi. Silakan masuk kembali.')
+    setAuthView('landing')
+    notify('Anda telah keluar dari sesi.')
   }
 
   const handleLoginSuccess = (user) => {
@@ -131,7 +133,23 @@ export default function App() {
     notify(`Registrasi berhasil! Nomor pendaftaran Anda: ${newApplicant.id}`)
   }
 
-  // If in Login view
+  // ── VIEW 1: LANDING PAGE PUBLIK ──────────────────────────────────────────
+  if (authView === 'landing') {
+    return (
+      <div className={dark ? 'dark' : ''}>
+        <LandingPage
+          onLoginClick={() => setAuthView('login')}
+          onRegisterClick={() => setAuthView('register')}
+          onGuestExplore={() => {
+            setAuthView('app')
+            setActiveModule('Dashboard')
+          }}
+        />
+      </div>
+    )
+  }
+
+  // ── VIEW 2: LOGIN ─────────────────────────────────────────────────────────
   if (authView === 'login') {
     return (
       <div className={dark ? 'dark' : ''}>
@@ -141,6 +159,7 @@ export default function App() {
           onLoginSuccess={handleLoginSuccess}
           onSwitchToRegister={() => setAuthView('register')}
           onForgotPassword={() => setIsForgotPasswordOpen(true)}
+          onBackToLanding={() => setAuthView('landing')}
         />
         <ForgotPasswordModal
           isOpen={isForgotPasswordOpen}
@@ -154,7 +173,7 @@ export default function App() {
     )
   }
 
-  // If in Register view
+  // ── VIEW 3: REGISTER ──────────────────────────────────────────────────────
   if (authView === 'register') {
     return (
       <div className={dark ? 'dark' : ''}>
@@ -166,7 +185,7 @@ export default function App() {
     )
   }
 
-  // Main Application Shell
+  // ── VIEW 4: MAIN APPLICATION SHELL ────────────────────────────────────────
   return (
     <AppShell
       activeModule={activeModule}
@@ -177,6 +196,7 @@ export default function App() {
       onChangeRole={handleChangeRole}
       onUpdateUser={setCurrentUser}
       onLogout={handleLogout}
+      onViewLanding={() => setAuthView('landing')}
       toast={toast}
       setToast={setToast}
       onNotify={notify}
@@ -216,15 +236,26 @@ export default function App() {
         />
       )}
 
-      {/* 2. Halaman Dashboard Admin PPDB */}
-      {activeModule === 'Dashboard' && currentUser?.roleId !== 'applicant' && (
-        <DashboardPage
-          applicants={applicants}
-          onNavigate={(mod) => setActiveModule(mod)}
-          onNotify={notify}
-          onOpenRegisterModal={() => setIsRegisterModalOpen(true)}
-        />
-      )}
+      {/* 2. Halaman Khusus Pimpinan (Executive) */}
+      {currentUser?.roleId === 'executive' &&
+        (activeModule === 'Pelaporan & Pimpinan' || activeModule === 'Dashboard') && (
+          <ExecutiveDashboardPage
+            applicants={applicants}
+            onNotify={notify}
+          />
+        )}
+
+      {/* 3. Halaman Dashboard Admin PPDB */}
+      {activeModule === 'Dashboard' &&
+        currentUser?.roleId !== 'applicant' &&
+        currentUser?.roleId !== 'executive' && (
+          <DashboardPage
+            applicants={applicants}
+            onNavigate={(mod) => setActiveModule(mod)}
+            onNotify={notify}
+            onOpenRegisterModal={() => setIsRegisterModalOpen(true)}
+          />
+        )}
 
       {activeModule === 'Pendaftaran Santri' && (
         <RegistrationManagementPage
@@ -262,7 +293,7 @@ export default function App() {
         />
       )}
 
-      {activeModule === 'Pelaporan & Pimpinan' && (
+      {activeModule === 'Pelaporan & Pimpinan' && currentUser?.roleId !== 'executive' && (
         <ReportsPage
           applicants={applicants}
           onNotify={notify}

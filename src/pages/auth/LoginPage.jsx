@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react'
-import { GraduationCap, Lock, Mail, ArrowRight, Sparkles, AlertCircle, Eye, EyeOff } from 'lucide-react'
+import { GraduationCap, Lock, Mail, ArrowRight, Sparkles, AlertCircle, Eye, EyeOff, Home } from 'lucide-react'
 import { mockUsers } from '../../data/mockUsers'
 
 export function LoginPage({
   onLoginSuccess,
   onSwitchToRegister,
   onForgotPassword,
+  onBackToLanding,
   users = mockUsers,
   prefillEmail = ''
 }) {
@@ -19,6 +20,12 @@ export function LoginPage({
       setEmail(prefillEmail)
     }
   }, [prefillEmail])
+
+  const handleQuickDemo = (demoEmail, demoPass) => {
+    setEmail(demoEmail)
+    setPassword(demoPass)
+    setError('')
+  }
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -89,7 +96,14 @@ export function LoginPage({
         return
       }
     }
-    // 5. Calon Santri / Wali: wajib menggunakan password yang terdaftar pada email akunnya
+    // 5. Pimpinan: password HANYA 'pimpinan123'
+    else if (matchedUser.roleId === 'executive' || cleanInput === 'pimpinan') {
+      if (inputPassword !== 'pimpinan123') {
+        setError('Kata sandi salah! Kata sandi untuk Pimpinan Pesantren adalah: pimpinan123')
+        return
+      }
+    }
+    // 6. Calon Santri / Wali: wajib menggunakan password yang terdaftar pada email akunnya
     else if (matchedUser.roleId === 'applicant') {
       const registeredPassword = matchedUser.password || 'santri123'
       if (inputPassword !== registeredPassword) {
@@ -120,7 +134,7 @@ export function LoginPage({
                 <GraduationCap size={24} />
               </div>
               <div>
-                <h2 className="font-bold tracking-tight text-white">Darul Haromain</h2>
+                <h2 className="font-bold tracking-tight text-white">Darul Harumain</h2>
                 <p className="text-[10px] font-bold uppercase tracking-[.15em] text-lime-300">
                   Portal PPDB Terpadu
                 </p>
@@ -129,19 +143,28 @@ export function LoginPage({
 
             <div className="mt-12">
               <span className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[11px] font-semibold text-lime-200">
-                <Sparkles size={13} /> Tahun Ajaran 2026 / 2027
+                <Sparkles size={13} /> Tahun Ajaran 2027 / 2028
               </span>
               <h1 className="mt-4 text-2xl font-bold leading-tight lg:text-3xl">
                 Mencetak Generasi Qur’ani yang Berakhlakul Karimah
               </h1>
               <p className="mt-3 text-xs leading-6 text-white/75">
-                Sistem pendaftaran santri baru terpusat dengan transparansi verifikasi berkas, tes online mandiri, dan integrasi penempatan asrama.
+                Sistem pendaftaran santri baru terpusat dengan transparansi verifikasi berkas, tes pemetaan mandiri, dan penempatan kamar asrama.
               </p>
             </div>
           </div>
 
-          <div className="relative z-10 mt-auto pt-8 text-[11px] text-white/60">
-            &copy; 2026 Pondok Pesantren Darul Haromain. Seluruh hak cipta dilindungi.
+          <div className="relative z-10 mt-auto pt-8 flex items-center justify-between text-[11px] text-white/60">
+            <span>&copy; Pondok Pesantren Darul Harumain.</span>
+            {onBackToLanding && (
+              <button
+                type="button"
+                onClick={onBackToLanding}
+                className="inline-flex items-center gap-1 text-lime-300 hover:underline font-semibold"
+              >
+                <Home size={13} /> Halaman Utama
+              </button>
+            )}
           </div>
 
           {/* Background decorative circles */}
@@ -166,7 +189,56 @@ export function LoginPage({
               </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+            {/* Quick Demo Switcher Buttons */}
+            <div className="mt-4 rounded-2xl border border-slate-100 bg-slate-50/70 p-3 text-[11px] dark:border-white/5 dark:bg-white/[0.02]">
+              <p className="font-bold text-slate-500 dark:text-slate-400 mb-1.5">PILIH AKUN CEPAT (DEMO):</p>
+              <div className="flex flex-wrap gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => handleQuickDemo('admin.ppdb@darulharumain.sch.id', 'admin123')}
+                  className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-[10px] font-semibold text-slate-700 hover:border-brand-500 dark:border-white/10 dark:bg-white/5 dark:text-slate-200"
+                >
+                  Admin PPDB
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleQuickDemo('pimpinan@darulharumain.sch.id', 'pimpinan123')}
+                  className="rounded-lg border border-indigo-200 bg-indigo-50 px-2 py-1 text-[10px] font-bold text-indigo-700 hover:bg-indigo-100 dark:border-indigo-900/50 dark:bg-indigo-950/40 dark:text-indigo-300"
+                >
+                  Pimpinan (Mudir)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleQuickDemo('ahmad.fauzan@gmail.com', 'santri123')}
+                  className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-[10px] font-semibold text-slate-700 hover:border-brand-500 dark:border-white/10 dark:bg-white/5 dark:text-slate-200"
+                >
+                  Calon Santri
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleQuickDemo('bendahara@darulharumain.sch.id', 'bendahara123')}
+                  className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-[10px] font-semibold text-slate-700 hover:border-brand-500 dark:border-white/10 dark:bg-white/5 dark:text-slate-200"
+                >
+                  Bendahara
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleQuickDemo('penguji.quran@darulharumain.sch.id', 'penguji123')}
+                  className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-[10px] font-semibold text-slate-700 hover:border-brand-500 dark:border-white/10 dark:bg-white/5 dark:text-slate-200"
+                >
+                  Penguji
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleQuickDemo('verifikator@darulharumain.sch.id', 'verifikator123')}
+                  className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-[10px] font-semibold text-slate-700 hover:border-brand-500 dark:border-white/10 dark:bg-white/5 dark:text-slate-200"
+                >
+                  Verifikator
+                </button>
+              </div>
+            </div>
+
+            <form onSubmit={handleSubmit} className="mt-4 space-y-4">
               {error && (
                 <div className="flex items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs text-rose-700 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-300">
                   <AlertCircle size={16} />
@@ -234,15 +306,28 @@ export function LoginPage({
             </form>
           </div>
 
-          <div className="mt-6 border-t border-slate-100 pt-5 text-center text-xs dark:border-white/10">
-            <span className="text-slate-500 dark:text-slate-400">Belum memiliki akun calon santri? </span>
-            <button
-              type="button"
-              onClick={onSwitchToRegister}
-              className="font-bold text-brand-600 hover:underline dark:text-brand-400"
-            >
-              Daftar Santri Baru
-            </button>
+          <div className="mt-6 border-t border-slate-100 pt-5 text-center text-xs dark:border-white/10 space-y-2">
+            <div>
+              <span className="text-slate-500 dark:text-slate-400">Belum memiliki akun calon santri? </span>
+              <button
+                type="button"
+                onClick={onSwitchToRegister}
+                className="font-bold text-brand-600 hover:underline dark:text-brand-400"
+              >
+                Daftar Santri Baru
+              </button>
+            </div>
+            {onBackToLanding && (
+              <div>
+                <button
+                  type="button"
+                  onClick={onBackToLanding}
+                  className="text-[11px] font-semibold text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white"
+                >
+                  &larr; Kembali ke Beranda Landing Page
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>

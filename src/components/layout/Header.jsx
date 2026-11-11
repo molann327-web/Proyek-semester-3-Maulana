@@ -8,7 +8,8 @@ import {
   ChevronDown,
   KeyRound,
   LogOut,
-  User
+  User,
+  Home
 } from 'lucide-react'
 
 export function Header({
@@ -21,7 +22,8 @@ export function Header({
   onOpenProfile,
   onOpenPasswordModal,
   onLogout,
-  onNavigate
+  onNavigate,
+  onViewLanding
 }) {
   const [showNotifications, setShowNotifications] = useState(false)
   const [showUserDropdown, setShowUserDropdown] = useState(false)
@@ -51,13 +53,26 @@ export function Header({
             <span className="font-semibold text-slate-800 dark:text-slate-200">{activeModule}</span>
           </div>
           <p className="hidden text-[11px] text-slate-400 sm:block">
-            Sistem Informasi Penerimaan Santri Baru T.A. 2026/2027
+            Sistem Informasi Penerimaan Santri Baru T.A. 2027/2028
           </p>
         </div>
       </div>
 
       {/* Right controls */}
       <div className="flex items-center gap-2 sm:gap-3">
+        {/* Tombol ke Landing Page publik */}
+        {onViewLanding && (
+          <button
+            type="button"
+            onClick={onViewLanding}
+            className="hidden items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-brand-500 hover:text-brand-600 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 sm:flex"
+            title="Buka Halaman Utama / Landing Page Publik"
+          >
+            <Home size={14} className="text-brand-600" />
+            <span>Landing Page</span>
+          </button>
+        )}
+
         {/* Theme switcher */}
         <button
           type="button"
@@ -80,50 +95,30 @@ export function Header({
             className="relative grid h-10 w-10 place-items-center rounded-xl border border-slate-200 text-slate-600 transition hover:border-brand-300 hover:text-brand-600 dark:border-white/10 dark:text-slate-300"
           >
             <BellRing size={17} />
-            <span className="absolute right-2 top-2 h-2 w-2 rounded-full border-2 border-white bg-rose-500 dark:border-[#151d14]" />
+            <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-brand-500" />
           </button>
 
           {showNotifications && (
-            <div className="absolute right-0 top-12 z-50 w-80 rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl dark:border-white/10 dark:bg-[#1a2318]">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-2 dark:border-white/10">
-                <p className="text-xs font-bold text-slate-800 dark:text-white">Pemberitahuan Sistem</p>
-                <span className="rounded-full bg-brand-50 px-2 py-0.5 text-[10px] font-bold text-brand-700 dark:bg-brand-900/40 dark:text-brand-300">
-                  3 Baru
-                </span>
+            <div className="absolute right-0 top-12 z-50 w-72 rounded-2xl border border-slate-200 bg-white p-3 shadow-2xl dark:border-white/10 dark:bg-[#1a2318]">
+              <div className="border-b border-slate-100 pb-2 font-bold text-xs text-slate-800 dark:text-white flex justify-between items-center">
+                <span>Notifikasi Masuk</span>
+                <span className="text-[10px] text-brand-600 font-bold">2 Baru</span>
               </div>
-              <div className="mt-3 space-y-2.5 text-xs">
-                <div
-                  onClick={() => {
-                    onNavigate('Verifikasi & Seleksi')
-                    setShowNotifications(false)
-                  }}
-                  className="cursor-pointer rounded-xl bg-slate-50 p-2.5 transition hover:bg-brand-50/60 dark:bg-white/5"
-                >
-                  <p className="font-semibold text-slate-800 dark:text-slate-200">Berkas Perlu Ditinjau</p>
-                  <p className="mt-0.5 text-[11px] text-slate-500 dark:text-slate-400">
-                    Ada 3 berkas calon santri baru yang masuk antrean verifikasi hari ini.
-                  </p>
+              <div className="mt-2 space-y-2 text-xs">
+                <div className="rounded-xl bg-slate-50 p-2.5 dark:bg-white/5">
+                  <p className="font-semibold text-slate-800 dark:text-slate-100">Verifikasi Berkas Selesai</p>
+                  <p className="text-[10px] text-slate-400">Berkas calon santri Ahmad Fauzan Pratama dinyatakan VALID.</p>
                 </div>
-                <div
-                  onClick={() => {
-                    onNavigate('Keuangan & Pembayaran')
-                    setShowNotifications(false)
-                  }}
-                  className="cursor-pointer rounded-xl bg-slate-50 p-2.5 transition hover:bg-brand-50/60 dark:bg-white/5"
-                >
-                  <p className="font-semibold text-slate-800 dark:text-slate-200">Konfirmasi Pembayaran</p>
-                  <p className="mt-0.5 text-[11px] text-slate-500 dark:text-slate-400">
-                    2 bukti transfer menanti validasi dari bendahara PPDB.
-                  </p>
+                <div className="rounded-xl bg-slate-50 p-2.5 dark:bg-white/5">
+                  <p className="font-semibold text-slate-800 dark:text-slate-100">Pembayaran Terverifikasi</p>
+                  <p className="text-[10px] text-slate-400">Biaya formulir pendaftaran INV-2026-00412 telah lunas.</p>
                 </div>
               </div>
             </div>
           )}
         </div>
 
-        <div className="hidden h-8 w-px bg-slate-200 sm:block dark:bg-white/10" />
-
-        {/* User profile menu */}
+        {/* User profile dropdown button */}
         <div className="relative">
           <button
             type="button"
@@ -131,20 +126,16 @@ export function Header({
               setShowUserDropdown(!showUserDropdown)
               setShowNotifications(false)
             }}
-            className="flex items-center gap-2 rounded-xl p-1 hover:bg-slate-50 dark:hover:bg-white/5"
+            className="flex items-center gap-2.5 rounded-2xl border border-slate-200/80 bg-white p-1.5 pl-3 text-xs transition hover:border-slate-300 dark:border-white/10 dark:bg-white/5"
           >
-            <div className="grid h-9 w-9 place-items-center rounded-xl bg-brand-100 text-xs font-bold text-brand-700 dark:bg-brand-900/60 dark:text-brand-200">
-              {currentUser?.avatarInitials || 'AD'}
+            <div className="text-right hidden sm:block">
+              <p className="font-bold leading-tight text-slate-800 dark:text-slate-100">{currentUser?.name}</p>
+              <p className="text-[10px] text-slate-400">{currentUser?.roleName || 'Pengguna'}</p>
             </div>
-            <div className="hidden text-left sm:block">
-              <p className="max-w-[130px] truncate text-xs font-bold text-slate-800 dark:text-white">
-                {currentUser?.name?.split(' ')[0] || 'Admin'}
-              </p>
-              <p className="max-w-[130px] truncate text-[10px] text-slate-400">
-                {currentUser?.roleName?.split(' ')[0] || 'Administrator'}
-              </p>
+            <div className="grid h-8 w-8 place-items-center rounded-xl bg-brand-500 font-bold text-white shadow-sm">
+              {currentUser?.avatarInitials || 'AG'}
             </div>
-            <ChevronDown size={14} className="hidden text-slate-400 sm:block" />
+            <ChevronDown size={14} className="text-slate-400" />
           </button>
 
           {showUserDropdown && (
@@ -154,6 +145,18 @@ export function Header({
                 <p className="truncate text-[10px] text-slate-400">{currentUser?.email}</p>
               </div>
               <div className="mt-1 space-y-1">
+                {onViewLanding && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onViewLanding()
+                      setShowUserDropdown(false)
+                    }}
+                    className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-xs text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-white/5"
+                  >
+                    <Home size={15} /> Lihat Landing Page
+                  </button>
+                )}
                 <button
                   type="button"
                   onClick={() => {

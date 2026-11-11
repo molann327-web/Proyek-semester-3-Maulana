@@ -15,6 +15,7 @@ export function AppShell({
   onChangeRole,
   onUpdateUser,
   onLogout,
+  onViewLanding,
   toast,
   setToast,
   onNotify,
@@ -52,6 +53,7 @@ export function AppShell({
             onOpenPasswordModal={() => setIsPasswordOpen(true)}
             onLogout={onLogout}
             onNavigate={(mod) => setActiveModule(mod)}
+            onViewLanding={onViewLanding}
           />
 
           <div className="flex-1 p-4 sm:p-7 max-w-[1600px] w-full mx-auto">

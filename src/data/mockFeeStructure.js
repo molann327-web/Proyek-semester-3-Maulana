@@ -1,11 +1,13 @@
 // Data Rincian Biaya PPDB & Perlengkapan Santri Baru
 // Sesuai Brosur & Dokumen Resmi Pondok Pesantren Darul Haromain Tahun Pelajaran 2027 - 2028
-// Ketua Panitia PSB: Fatkan Nur Fiqli, S.Pd.
+// Ketua Panitia PSB: Fatkan Nur Fiqli, S.Pd. (Ka Fatkhan)
 
 export const officialFeeStructure = {
   academicYear: '2027 - 2028',
   location: 'Bogor, Jawa Barat',
   committeeHead: 'Fatkan Nur Fiqli, S.Pd.',
+  committeeNickname: 'Ka Fatkhan',
+  committeePhone: '0813-8025-2083',
   committeeTitle: 'Ketua Panitia PSB Pondok Pesantren Darul Haromain',
 
   // 1. Biaya Formulir Pendaftaran Awal
@@ -111,8 +113,8 @@ export const officialFeeStructure = {
 export const officialBankAccounts = [
   {
     bank: 'Bank Syariah Indonesia (BSI)',
-    accountNumber: '711-2345-890',
-    accountName: 'PPDB Pondok Pesantren Darul Haromain',
+    accountNumber: '7335153493',
+    accountName: 'Fatkhan (Ketua Panitia PSB)',
     badge: 'Utama / Rekomendasi'
   },
   {

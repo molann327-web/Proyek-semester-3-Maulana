@@ -9,7 +9,7 @@ export const mockCostItems = [
 ]
 
 export const mockPaymentAccounts = [
-  { bank: 'Bank Syariah Indonesia (BSI)', accountNumber: '711-2345-890', accountName: 'PPDB Pondok Pesantren Darul Harumain', qrCode: 'QRIS-DH-BSI' },
+  { bank: 'Bank Syariah Indonesia (BSI)', accountNumber: '7335153493', accountName: 'Fatkhan (Ketua Panitia PSB)', qrCode: 'QRIS-DH-BSI' },
   { bank: 'Bank Central Asia (BCA)', accountNumber: '883-0987-123', accountName: 'Yayasan Darul Harumain', qrCode: 'QRIS-DH-BCA' },
   { bank: 'Bank Mandiri', accountNumber: '133-00-9876543-1', accountName: 'Darul Harumain Penerimaan', qrCode: 'QRIS-DH-MANDIRI' }
 ]

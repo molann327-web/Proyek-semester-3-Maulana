@@ -32,7 +32,7 @@ export function LandingPage({
   const [genderTab, setGenderTab] = useState('putra') // 'putra' | 'putri'
   const [levelTab, setLevelTab] = useState('smp') // 'smp' | 'sma'
 
-  const { equipment, reregistrationFees, registrationFee, admissionPackage, academicYear, committeeHead } = officialFeeStructure
+  const { equipment, reregistrationFees, registrationFee, admissionPackage, academicYear, committeeHead, committeeNickname, committeePhone } = officialFeeStructure
 
   const reregAmount = levelTab === 'smp' ? reregistrationFees.smp.amount : reregistrationFees.sma.amount
   const reregFormatted = levelTab === 'smp' ? reregistrationFees.smp.formatted : reregistrationFees.sma.formatted
@@ -678,13 +678,27 @@ export function LandingPage({
               </p>
 
               <div className="mt-6 space-y-3 text-xs">
-                <div className="flex items-center gap-3 rounded-2xl border border-slate-100 bg-slate-50/70 p-3.5 dark:border-white/5 dark:bg-white/[0.02]">
-                  <PhoneCall size={18} className="text-brand-600" />
-                  <div>
-                    <p className="font-bold text-slate-800 dark:text-white">Ketua Panitia PSB</p>
-                    <p className="text-slate-500">{committeeHead} &bull; WhatsApp: 0812-3456-7890</p>
+                <a
+                  href={`https://wa.me/62${(committeePhone || '0813-8025-2083').replace(/[^0-9]/g, '').replace(/^0/, '')}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between gap-3 rounded-2xl border border-brand-200 bg-brand-50/50 p-4 transition-all hover:bg-brand-50 hover:shadow-sm dark:border-brand-900/40 dark:bg-brand-950/20"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="grid h-10 w-10 place-items-center rounded-xl bg-brand-500 text-white">
+                      <PhoneCall size={18} />
+                    </div>
+                    <div>
+                      <p className="font-bold text-slate-800 dark:text-white">
+                        {committeeNickname ? `${committeeNickname} (${committeeHead})` : committeeHead}
+                      </p>
+                      <p className="text-slate-500 dark:text-slate-400">
+                        WhatsApp: <span className="font-semibold text-brand-700 dark:text-brand-300">{committeePhone}</span> &bull; Klik untuk chat
+                      </p>
+                    </div>
                   </div>
-                </div>
+                  <ChevronRight size={18} className="text-brand-600 dark:text-brand-400" />
+                </a>
                 <div className="flex items-center gap-3 rounded-2xl border border-slate-100 bg-slate-50/70 p-3.5 dark:border-white/5 dark:bg-white/[0.02]">
                   <Building size={18} className="text-brand-600" />
                   <div>

@@ -112,3 +112,4 @@ export const officialBankAccounts = [
     badge: 'Mandiri Livin'
   }
 ]
+

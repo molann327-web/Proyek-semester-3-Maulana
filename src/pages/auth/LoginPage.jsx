@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { GraduationCap, Lock, Mail, ArrowRight, Sparkles, AlertCircle, Eye, EyeOff, Home } from 'lucide-react'
+import { GraduationCap, Lock, Mail, ArrowRight, Sparkles, AlertCircle, Eye, EyeOff, Home, KeyRound, HelpCircle } from 'lucide-react'
 import { mockUsers } from '../../data/mockUsers'
 
 export function LoginPage({
@@ -20,12 +20,6 @@ export function LoginPage({
       setEmail(prefillEmail)
     }
   }, [prefillEmail])
-
-  const handleQuickDemo = (demoEmail, demoPass) => {
-    setEmail(demoEmail)
-    setPassword(demoPass)
-    setError('')
-  }
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -51,7 +45,7 @@ export function LoginPage({
         return true
       }
 
-      // Kata kunci cepat agar praktis saat login pengujian
+      // Kata kunci cepat login
       if (cleanInput === 'admin' && uRole === 'super_admin') return true
       if (cleanInput === 'verifikator' && uRole === 'verifier') return true
       if (cleanInput === 'bendahara' && uRole === 'treasurer') return true
@@ -68,21 +62,21 @@ export function LoginPage({
     }
 
     // VALIDASI KATA SANDI SESUAI ATURAN ROLE:
-    // 1. Admin: password HANYA 'admin123'
+    // 1. Admin: password 'admin123'
     if (matchedUser.roleId === 'super_admin' || cleanInput === 'admin') {
       if (inputPassword !== 'admin123') {
         setError('Kata sandi salah! Kata sandi untuk Admin PPDB adalah: admin123')
         return
       }
     }
-    // 2. Bendahara: password HANYA 'bendahara123'
+    // 2. Bendahara: password 'bendahara123'
     else if (matchedUser.roleId === 'treasurer' || cleanInput === 'bendahara') {
       if (inputPassword !== 'bendahara123') {
         setError('Kata sandi salah! Kata sandi untuk Bendahara adalah: bendahara123')
         return
       }
     }
-    // 3. Penguji: password HANYA 'penguji123'
+    // 3. Penguji: password 'penguji123'
     else if (matchedUser.roleId === 'examiner' || cleanInput === 'penguji') {
       if (inputPassword !== 'penguji123') {
         setError('Kata sandi salah! Kata sandi untuk Penguji adalah: penguji123')
@@ -96,7 +90,7 @@ export function LoginPage({
         return
       }
     }
-    // 5. Pimpinan: password HANYA 'pimpinan123'
+    // 5. Pimpinan: password 'pimpinan123'
     else if (matchedUser.roleId === 'executive' || cleanInput === 'pimpinan') {
       if (inputPassword !== 'pimpinan123') {
         setError('Kata sandi salah! Kata sandi untuk Pimpinan Pesantren adalah: pimpinan123')
@@ -107,7 +101,7 @@ export function LoginPage({
     else if (matchedUser.roleId === 'applicant') {
       const registeredPassword = matchedUser.password || 'santri123'
       if (inputPassword !== registeredPassword) {
-        setError(`Kata sandi untuk akun calon santri (${matchedUser.email}) salah! Silakan gunakan kata sandi terdaftar dari email ini (default: santri123) atau gunakan fitur "Lupa sandi?".`)
+        setError(`Kata sandi untuk akun calon santri (${matchedUser.email}) salah! Silakan gunakan kata sandi terdaftar dari email ini (default: santri123) atau klik "Lupa Kata Sandi?" di bawah untuk mengatur ulang kata sandi Anda.`)
         return
       }
     }
@@ -115,7 +109,7 @@ export function LoginPage({
     else {
       const validPass = matchedUser.password || 'pesantren123'
       if (inputPassword !== validPass) {
-        setError('Kata sandi yang Anda masukkan salah. Silakan periksa kembali.')
+        setError('Kata sandi yang Anda masukkan salah. Silakan periksa kembali atau gunakan fitur lupa sandi.')
         return
       }
     }
@@ -189,60 +183,20 @@ export function LoginPage({
               </div>
             </div>
 
-            {/* Quick Demo Switcher Buttons */}
-            <div className="mt-4 rounded-2xl border border-slate-100 bg-slate-50/70 p-3 text-[11px] dark:border-white/5 dark:bg-white/[0.02]">
-              <p className="font-bold text-slate-500 dark:text-slate-400 mb-1.5">PILIH AKUN CEPAT (DEMO):</p>
-              <div className="flex flex-wrap gap-1.5">
-                <button
-                  type="button"
-                  onClick={() => handleQuickDemo('admin.ppdb@darulharumain.sch.id', 'admin123')}
-                  className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-[10px] font-semibold text-slate-700 hover:border-brand-500 dark:border-white/10 dark:bg-white/5 dark:text-slate-200"
-                >
-                  Admin PPDB
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleQuickDemo('pimpinan@darulharumain.sch.id', 'pimpinan123')}
-                  className="rounded-lg border border-indigo-200 bg-indigo-50 px-2 py-1 text-[10px] font-bold text-indigo-700 hover:bg-indigo-100 dark:border-indigo-900/50 dark:bg-indigo-950/40 dark:text-indigo-300"
-                >
-                  Pimpinan (Mudir)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleQuickDemo('ahmad.fauzan@gmail.com', 'santri123')}
-                  className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-[10px] font-semibold text-slate-700 hover:border-brand-500 dark:border-white/10 dark:bg-white/5 dark:text-slate-200"
-                >
-                  Calon Santri
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleQuickDemo('bendahara@darulharumain.sch.id', 'bendahara123')}
-                  className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-[10px] font-semibold text-slate-700 hover:border-brand-500 dark:border-white/10 dark:bg-white/5 dark:text-slate-200"
-                >
-                  Bendahara
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleQuickDemo('penguji.quran@darulharumain.sch.id', 'penguji123')}
-                  className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-[10px] font-semibold text-slate-700 hover:border-brand-500 dark:border-white/10 dark:bg-white/5 dark:text-slate-200"
-                >
-                  Penguji
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleQuickDemo('verifikator@darulharumain.sch.id', 'verifikator123')}
-                  className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-[10px] font-semibold text-slate-700 hover:border-brand-500 dark:border-white/10 dark:bg-white/5 dark:text-slate-200"
-                >
-                  Verifikator
-                </button>
-              </div>
-            </div>
-
-            <form onSubmit={handleSubmit} className="mt-4 space-y-4">
+            <form onSubmit={handleSubmit} className="mt-6 space-y-4">
               {error && (
-                <div className="flex items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs text-rose-700 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-300">
-                  <AlertCircle size={16} />
-                  <span>{error}</span>
+                <div className="flex items-start gap-2.5 rounded-2xl border border-rose-200 bg-rose-50 p-3.5 text-xs text-rose-700 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-300">
+                  <AlertCircle size={16} className="shrink-0 mt-0.5" />
+                  <div className="flex-1">
+                    <p>{error}</p>
+                    <button
+                      type="button"
+                      onClick={onForgotPassword}
+                      className="mt-1 font-bold underline hover:text-rose-800 dark:hover:text-rose-200"
+                    >
+                      Buka Fitur Lupa Sandi &rarr;
+                    </button>
+                  </div>
                 </div>
               )}
 
@@ -271,9 +225,10 @@ export function LoginPage({
                   <button
                     type="button"
                     onClick={onForgotPassword}
-                    className="text-[11px] font-semibold text-brand-600 hover:underline dark:text-brand-400"
+                    className="inline-flex items-center gap-1 text-[11px] font-semibold text-brand-600 hover:underline dark:text-brand-400"
                   >
-                    Lupa sandi?
+                    <KeyRound size={12} />
+                    <span>Lupa kata sandi?</span>
                   </button>
                 </div>
                 <div className="relative">
@@ -304,6 +259,21 @@ export function LoginPage({
                 Masuk ke Aplikasi <ArrowRight size={15} />
               </button>
             </form>
+
+            {/* Tombol Khusus Lupa Password agar mudah diakses */}
+            <div className="mt-4 rounded-2xl border border-slate-100 bg-slate-50/70 p-3 text-center dark:border-white/5 dark:bg-white/[0.02]">
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                Mengalami kendala masuk atau lupa kata sandi akun Anda?
+              </p>
+              <button
+                type="button"
+                onClick={onForgotPassword}
+                className="mt-1.5 inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 shadow-2xs hover:border-brand-500 hover:text-brand-600 dark:border-white/10 dark:bg-white/5 dark:text-slate-200"
+              >
+                <KeyRound size={13} className="text-brand-600" />
+                <span>Atur Ulang Kata Sandi (Lupa Sandi)</span>
+              </button>
+            </div>
           </div>
 
           <div className="mt-6 border-t border-slate-100 pt-5 text-center text-xs dark:border-white/10 space-y-2">

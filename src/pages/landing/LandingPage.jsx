@@ -139,13 +139,6 @@ export function LandingPage({
                   <Wallet size={16} className="text-brand-600" />
                   <span>Lihat Rincian Biaya</span>
                 </a>
-                <button
-                  type="button"
-                  onClick={onGuestExplore}
-                  className="rounded-2xl border border-dashed border-slate-300 px-4 py-3 text-xs font-semibold text-slate-500 hover:text-slate-800 dark:border-white/20 dark:text-slate-400"
-                >
-                  Jelajahi Demo Portal &rarr;
-                </button>
               </div>
 
               {/* Quick highlight points */}

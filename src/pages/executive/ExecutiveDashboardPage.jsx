@@ -17,7 +17,8 @@ import {
   FileText,
   BadgeCheck,
   ChevronRight,
-  ShieldCheck
+  ShieldCheck,
+  Receipt
 } from 'lucide-react'
 import { StatCard } from '../../components/common/StatCard'
 import { officialFeeStructure } from '../../data/mockFeeStructure'
@@ -27,9 +28,9 @@ export function ExecutiveDashboardPage({ applicants, onNotify }) {
   const [filterProgram, setFilterProgram] = useState('Semua')
   const [searchTerm, setSearchTerm] = useState('')
 
-  const { reregistrationFees, equipment, committeeHead, academicYear } = officialFeeStructure
+  const { reregistrationFees, equipment, admissionPackage, committeeHead, academicYear } = officialFeeStructure
 
-  // Santri yang dianggap data jadi: berkas terverifikasi & status pendaftaran selesai / lunas
+  // Santri yang dianggap data jadi: berkas terverifikasi
   const dataJadiSantri = applicants.filter((a) => {
     const isReady = a.status === 'Terverifikasi'
     const matchesProgram = filterProgram === 'Semua' || a.program?.includes(filterProgram)
@@ -41,20 +42,21 @@ export function ExecutiveDashboardPage({ applicants, onNotify }) {
     return isReady && matchesProgram && matchesSearch
   })
 
-  // Perhitungan Keuangan Riil Sesuai Ketetapan Baru
+  // Perhitungan Keuangan Riil Sesuai Brosur Resmi & Ketetapan Baru
   const totalPendaftar = applicants.length
   const totalDataJadi = applicants.filter((a) => a.status === 'Terverifikasi').length
   const totalLunasDaftarUlang = applicants.filter((a) => a.pay === 'Lunas' || a.pay === 'Daftar Ulang Lunas').length
 
-  // Total estimasi penerimaan:
-  // Formulir: totalPendaftar * 250.000
-  // Daftar ulang: SMP 1.200.000, SMA 1.400.000
-  let totalKasMasuk = totalPendaftar * 250000
+  // Total estimasi kas masuk:
+  // Formulir: totalPendaftar * 350.000
+  // Santri lunas: Biaya Masuk (Rp 7.725.000) + Daftar Ulang SMP/SMA + Perlengkapan
+  let totalKasMasuk = totalPendaftar * 350000
   applicants.forEach((a) => {
     if (a.pay === 'Lunas' || a.pay === 'Daftar Ulang Lunas') {
       const isSma = a.program?.toLowerCase().includes('aliyah') || a.program?.toLowerCase().includes('sma') || a.program?.toLowerCase().includes('smk')
+      totalKasMasuk += (admissionPackage.total - 350000) // sisa paket masuk di luar formulir
       totalKasMasuk += isSma ? reregistrationFees.sma.amount : reregistrationFees.smp.amount
-      totalKasMasuk += equipment.grandTotal.putra // estimasi perlengkapan
+      totalKasMasuk += equipment.grandTotal.putra // perlengkapan
     }
   })
 
@@ -83,7 +85,7 @@ export function ExecutiveDashboardPage({ applicants, onNotify }) {
             Laporan Data Jadi &amp; Monitoring Eksekutif PPDB
           </h1>
           <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-            Tahun Ajaran {academicYear} &bull; Pengawasan data santri baru, keuangan, dan hasil pemetaan kemampuan.
+            Tahun Ajaran {academicYear} &bull; Pengawasan data santri baru, keuangan resmi ({admissionPackage.formattedTotal}), dan hasil pemetaan.
           </p>
         </div>
 
@@ -110,7 +112,7 @@ export function ExecutiveDashboardPage({ applicants, onNotify }) {
         <StatCard
           label="Total Calon Santri Mendaftar"
           value={totalPendaftar}
-          delta="100%"
+          delta="Formulir 350rb"
           note="Gelombang 1 & 2"
           line="Target 250 Santri"
           icon={Users}
@@ -137,7 +139,7 @@ export function ExecutiveDashboardPage({ applicants, onNotify }) {
         <StatCard
           label="Total Dana PPDB Masuk"
           value={new Intl.NumberFormat('id-ID', { notation: 'compact', compactDisplay: 'short' }).format(totalKasMasuk)}
-          delta="Formulir + Daftar Ulang"
+          delta="Paket 7,72 Jt + Daftar Ulang"
           note="Rekening Resmi BSI/BCA"
           line="Termasuk Perlengkapan"
           icon={Wallet}
@@ -149,7 +151,7 @@ export function ExecutiveDashboardPage({ applicants, onNotify }) {
       <div className="flex flex-wrap gap-2 border-b border-slate-200/80 pb-3 dark:border-white/10">
         {[
           { key: 'data-jadi', label: 'Tabel Data Jadi Santri Baru', icon: Users },
-          { key: 'keuangan', label: 'Rekapitulasi Keuangan & Biaya', icon: Wallet },
+          { key: 'keuangan', label: 'Rekapitulasi Keuangan & Biaya Resmi', icon: Wallet },
           { key: 'pemetaan', label: 'Hasil Pemetaan Kemampuan Santri', icon: Compass }
         ].map((t) => {
           const Icon = t.icon
@@ -175,7 +177,6 @@ export function ExecutiveDashboardPage({ applicants, onNotify }) {
       {/* ── TAB 1: DATA JADI SANTRI BARU ───────────────────────────────── */}
       {activeTab === 'data-jadi' && (
         <div className="space-y-4">
-          {/* Filter Bar */}
           <div className="flex flex-col justify-between gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 dark:border-white/10 dark:bg-[#192118] sm:flex-row sm:items-center">
             <div className="relative flex-1 max-w-sm">
               <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -207,7 +208,6 @@ export function ExecutiveDashboardPage({ applicants, onNotify }) {
             </div>
           </div>
 
-          {/* Table Data Jadi */}
           <div className="overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-soft dark:border-white/10 dark:bg-[#192118]">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
@@ -273,52 +273,98 @@ export function ExecutiveDashboardPage({ applicants, onNotify }) {
         </div>
       )}
 
-      {/* ── TAB 2: REKAPITULASI KEUANGAN & BIAYA ────────────────────────── */}
+      {/* ── TAB 2: REKAPITULASI KEUANGAN RESMI ─────────────────────────── */}
       {activeTab === 'keuangan' && (
         <div className="space-y-6">
+          {/* Tabel Brosur Resmi Biaya Pendaftaran Rp 7.725.000 */}
+          <div className="overflow-hidden rounded-3xl border border-amber-300 bg-white shadow-soft dark:border-amber-700/40 dark:bg-[#192118]">
+            <div className="bg-[#284B2D] p-5 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-lime-300">
+                  Ketetapan Brosur Resmi PPDB Darul Haromain
+                </span>
+                <h3 className="text-lg font-black text-white">
+                  {admissionPackage.title}
+                </h3>
+              </div>
+              <div className="text-left sm:text-right">
+                <span className="text-xs text-white/80">Jumlah Biaya Masuk:</span>
+                <p className="text-2xl font-black text-lime-300">{admissionPackage.formattedTotal}</p>
+              </div>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-amber-500 text-white font-bold uppercase text-[11px] tracking-wider">
+                  <tr>
+                    <th className="px-6 py-3">No</th>
+                    <th className="px-6 py-3">Keterangan Biaya</th>
+                    <th className="px-6 py-3">Peruntukan</th>
+                    <th className="px-6 py-3 text-right">Biaya (Rp)</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-white/5">
+                  {admissionPackage.items.map((it) => (
+                    <tr key={it.no} className="hover:bg-slate-50/60 dark:hover:bg-white/[0.02]">
+                      <td className="px-6 py-3.5 font-bold text-slate-400">{it.no}</td>
+                      <td className="px-6 py-3.5 font-bold text-slate-800 dark:text-white">{it.name}</td>
+                      <td className="px-6 py-3.5 text-slate-500 dark:text-slate-400">{it.desc}</td>
+                      <td className="px-6 py-3.5 text-right font-mono font-bold text-slate-900 dark:text-slate-100">{it.formatted}</td>
+                    </tr>
+                  ))}
+                  <tr className="bg-amber-50 font-black text-xs dark:bg-amber-950/30 text-amber-950 dark:text-amber-200 border-t-2 border-amber-400">
+                    <td colSpan={3} className="px-6 py-3.5 uppercase tracking-wider">Jumlah Keseluruhan Biaya Pendaftaran</td>
+                    <td className="px-6 py-3.5 text-right text-base text-brand-700 dark:text-brand-300">{admissionPackage.formattedTotal}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div className="p-3.5 bg-slate-50 border-t border-slate-100 dark:bg-white/5 dark:border-white/5 flex flex-col sm:flex-row justify-between items-center text-xs gap-2">
+              <span className="font-semibold text-slate-600 dark:text-slate-300 italic">
+                {admissionPackage.disclaimer}
+              </span>
+              <span className="text-slate-400">
+                Bogor, 27 Agustus 2026 &bull; Mengetahui, {committeeHead}
+              </span>
+            </div>
+          </div>
+
           <div className="grid gap-6 lg:grid-cols-2">
-            {/* Rincian Tarif Resmi yang Disahkan */}
+            {/* Rincian Pendaftaran Ulang & Perlengkapan */}
             <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-soft dark:border-white/10 dark:bg-[#192118]">
               <div className="flex items-center justify-between border-b border-slate-100 pb-4 dark:border-white/10">
                 <h3 className="font-bold text-slate-900 dark:text-white">
-                  Struktur Tarif Resmi PPDB {academicYear}
+                  Pendaftaran Ulang &amp; Perlengkapan Santri
                 </h3>
                 <span className="rounded-full bg-brand-100 px-2.5 py-0.5 text-[10px] font-bold text-brand-800 dark:bg-brand-900/40 dark:text-brand-300">
-                  SK Panitia PSB
+                  Ketetapan Panitia
                 </span>
               </div>
 
               <div className="mt-4 space-y-3 text-xs">
-                <div className="flex items-center justify-between rounded-xl bg-slate-50 p-3 dark:bg-white/5">
-                  <span className="font-semibold text-slate-700 dark:text-slate-200">1. Biaya Formulir / Pendaftaran Awal</span>
-                  <span className="font-bold text-slate-900 dark:text-white">Rp 250.000</span>
-                </div>
                 <div className="flex items-center justify-between rounded-xl bg-brand-50/70 p-3 dark:bg-brand-950/20">
-                  <span className="font-semibold text-brand-900 dark:text-brand-200">2. Biaya Pendaftaran Ulang SMP / MTs</span>
+                  <span className="font-semibold text-brand-900 dark:text-brand-200">1. Biaya Pendaftaran Ulang SMP / MTs</span>
                   <span className="font-bold text-brand-800 dark:text-brand-300">Rp 1.200.000</span>
                 </div>
                 <div className="flex items-center justify-between rounded-xl bg-purple-50/70 p-3 dark:bg-purple-950/20">
-                  <span className="font-semibold text-purple-900 dark:text-purple-200">3. Biaya Pendaftaran Ulang SMA / SMK / MA</span>
+                  <span className="font-semibold text-purple-900 dark:text-purple-200">2. Biaya Pendaftaran Ulang SMA / SMK / MA</span>
                   <span className="font-bold text-purple-800 dark:text-purple-300">Rp 1.400.000</span>
                 </div>
                 <div className="flex items-center justify-between rounded-xl bg-slate-50 p-3 dark:bg-white/5">
                   <div>
-                    <span className="font-semibold text-slate-700 dark:text-slate-200">4. Perlengkapan Santri Baru Putra</span>
+                    <span className="font-semibold text-slate-700 dark:text-slate-200">3. Perlengkapan Santri Baru Putra</span>
                     <p className="text-[10px] text-slate-400">Kasur (300rb) + 10 Kitab Amtsilati (617.500) + Seragam (1.050.000)</p>
                   </div>
                   <span className="font-bold text-slate-900 dark:text-white">Rp 1.967.500</span>
                 </div>
                 <div className="flex items-center justify-between rounded-xl bg-slate-50 p-3 dark:bg-white/5">
                   <div>
-                    <span className="font-semibold text-slate-700 dark:text-slate-200">5. Perlengkapan Santri Baru Putri</span>
+                    <span className="font-semibold text-slate-700 dark:text-slate-200">4. Perlengkapan Santri Baru Putri</span>
                     <p className="text-[10px] text-slate-400">Kasur (300rb) + 10 Kitab Amtsilati (617.500) + Seragam (1.100.000)</p>
                   </div>
                   <span className="font-bold text-slate-900 dark:text-white">Rp 2.017.500</span>
                 </div>
-              </div>
-
-              <div className="mt-5 border-t border-slate-100 pt-3 text-[11px] text-slate-500 dark:border-white/10">
-                Disahkan oleh Ketua Panitia PSB: <strong>{committeeHead}</strong> (Bogor, 27 Agustus 2026).
               </div>
             </div>
 
@@ -332,17 +378,17 @@ export function ExecutiveDashboardPage({ applicants, onNotify }) {
               <div className="mt-5 space-y-4 text-xs">
                 <div>
                   <div className="flex justify-between font-semibold">
-                    <span className="text-slate-700 dark:text-slate-200">Pengadaan Paket Kitab Amtsilati &amp; LKS</span>
-                    <span className="text-indigo-600 font-bold">35%</span>
+                    <span className="text-slate-700 dark:text-slate-200">Pendidikan &amp; Pengadaan Kitab Amtsilati</span>
+                    <span className="text-indigo-600 font-bold">40%</span>
                   </div>
                   <div className="mt-1.5 h-2 rounded-full bg-slate-100 dark:bg-white/10">
-                    <div className="h-full w-[35%] rounded-full bg-indigo-600" />
+                    <div className="h-full w-[40%] rounded-full bg-indigo-600" />
                   </div>
                 </div>
 
                 <div>
                   <div className="flex justify-between font-semibold">
-                    <span className="text-slate-700 dark:text-slate-200">Konveksi Seragam (Batik, Jas Almamater, Olahraga)</span>
+                    <span className="text-slate-700 dark:text-slate-200">Infak Pembangunan Asrama &amp; Kamar Santri</span>
                     <span className="text-brand-600 font-bold">30%</span>
                   </div>
                   <div className="mt-1.5 h-2 rounded-full bg-slate-100 dark:bg-white/10">
@@ -352,7 +398,7 @@ export function ExecutiveDashboardPage({ applicants, onNotify }) {
 
                 <div>
                   <div className="flex justify-between font-semibold">
-                    <span className="text-slate-700 dark:text-slate-200">Fasilitas Kamar (Kasur &amp; Perlengkapan Asrama)</span>
+                    <span className="text-slate-700 dark:text-slate-200">Konveksi Seragam (Batik, Jas, Olahraga) &amp; Kasur</span>
                     <span className="text-blue-600 font-bold">20%</span>
                   </div>
                   <div className="mt-1.5 h-2 rounded-full bg-slate-100 dark:bg-white/10">
@@ -362,11 +408,11 @@ export function ExecutiveDashboardPage({ applicants, onNotify }) {
 
                 <div>
                   <div className="flex justify-between font-semibold">
-                    <span className="text-slate-700 dark:text-slate-200">Operasional Panitia, Sistem CBT &amp; Asesmen</span>
-                    <span className="text-purple-600 font-bold">15%</span>
+                    <span className="text-slate-700 dark:text-slate-200">Operasional Sistem PPDB &amp; Syahriah Santri</span>
+                    <span className="text-purple-600 font-bold">10%</span>
                   </div>
                   <div className="mt-1.5 h-2 rounded-full bg-slate-100 dark:bg-white/10">
-                    <div className="h-full w-[15%] rounded-full bg-purple-500" />
+                    <div className="h-full w-[10%] rounded-full bg-purple-500" />
                   </div>
                 </div>
               </div>
@@ -452,4 +498,3 @@ export function ExecutiveDashboardPage({ applicants, onNotify }) {
     </div>
   )
 }
-

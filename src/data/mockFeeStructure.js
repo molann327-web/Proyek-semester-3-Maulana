@@ -1,5 +1,5 @@
 // Data Rincian Biaya PPDB & Perlengkapan Santri Baru
-// Sesuai Dokumen Resmi Pondok Pesantren Darul Haromain Tahun Pelajaran 2027 - 2028
+// Sesuai Brosur & Dokumen Resmi Pondok Pesantren Darul Haromain Tahun Pelajaran 2027 - 2028
 // Ketua Panitia PSB: Fatkan Nur Fiqli, S.Pd.
 
 export const officialFeeStructure = {
@@ -8,16 +8,32 @@ export const officialFeeStructure = {
   committeeHead: 'Fatkan Nur Fiqli, S.Pd.',
   committeeTitle: 'Ketua Panitia PSB Pondok Pesantren Darul Haromain',
 
-  // 1. Biaya Pendaftaran / Formulir Awal
+  // 1. Biaya Formulir Pendaftaran Awal
   registrationFee: {
-    title: 'Biaya Pendaftaran & Formulir (Awal)',
-    amount: 250000,
-    formatted: 'Rp 250.000',
-    description: 'Biaya administrasi registrasi, akun portal santri, dan kartu tanda peserta PPDB.',
+    title: 'Formulir Pendaftaran',
+    amount: 350000,
+    formatted: 'Rp 350.000',
+    description: 'Biaya formulir pendaftaran, akun portal PPDB online, dan penerbitan kartu tanda peserta.',
     status: 'Wajib saat awal mendaftar'
   },
 
-  // 2. Biaya Pendaftaran Ulang Berdasarkan Jenjang
+  // 2. Tabel Rincian Biaya Pendaftaran Resmi Pondok Pesantren Darul Haromain
+  // (Sesuai Brosur Resmi: Total Rp 7.725.000)
+  admissionPackage: {
+    title: 'Biaya Pendaftaran Pondok Pesantren Darul Haromain',
+    subtitle: 'Rincian Biaya Masuk & Pendidikan Awal Santri',
+    items: [
+      { no: 1, name: 'Formulir Pendaftaran', amount: 350000, formatted: '350.000', desc: 'Biaya registrasi & formulir akun santri' },
+      { no: 2, name: 'Uang Pangkal & Pendidikan', amount: 4000000, formatted: '4.000.000', desc: 'Pengembangan sarana kurikulum & kegiatan santri' },
+      { no: 3, name: 'Infak Bangunan', amount: 2500000, formatted: '2.500.000', desc: 'Pengembangan fasilitas asrama & sarana pondok' },
+      { no: 4, name: 'Syahriah / Bulanan (Juli)', amount: 875000, formatted: '875.000', desc: 'Iuran syahriah bulan pertama kedatangan santri' }
+    ],
+    total: 7725000,
+    formattedTotal: 'Rp 7.725.000',
+    disclaimer: '*Belum termasuk Kitab, LKS, Kasur, dan Seragam'
+  },
+
+  // 3. Biaya Pendaftaran Ulang Berdasarkan Jenjang
   reregistrationFees: {
     smp: {
       level: 'SMP / MTs',
@@ -35,7 +51,7 @@ export const officialFeeStructure = {
     }
   },
 
-  // 3. Rincian Perlengkapan Santri Baru
+  // 4. Rincian Perlengkapan Santri Baru (SK Panitia PSB Fatkan Nur Fiqli, S.Pd.)
   equipment: {
     // A. Perlengkapan Kamar
     roomItems: [
@@ -112,4 +128,3 @@ export const officialBankAccounts = [
     badge: 'Mandiri Livin'
   }
 ]
-

@@ -27,7 +27,8 @@ import {
   CreditCard,
   Compass,
   Info,
-  BookOpen
+  BookOpen,
+  Receipt
 } from 'lucide-react'
 import { RegistrationCardModal } from '../registration/RegistrationCardModal'
 import { OnlineExamSimulationModal } from '../exam/OnlineExamSimulationModal'
@@ -49,7 +50,7 @@ export function ApplicantPortalPage({
   const [copiedBank, setCopiedBank] = useState(null)
   const [showEquipDetail, setShowEquipDetail] = useState(false)
 
-  const { reregistrationFees, equipment, registrationFee, committeeHead, academicYear } = officialFeeStructure
+  const { reregistrationFees, equipment, registrationFee, admissionPackage, committeeHead, academicYear } = officialFeeStructure
 
   // Sync with prop if it changes
   React.useEffect(() => {
@@ -113,23 +114,18 @@ export function ApplicantPortalPage({
   const totalBiayaDaftarUlangFormatted = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(totalBiayaDaftarUlang)
 
   // ── ACCESS CONTROL LOGIC BARU ──────────────────────────────────────────────
-  // 1. Dokumen valid: Semua dokumen valid & status terverifikasi oleh admin
   const allDocsValid =
     Array.isArray(santri.documents) &&
     santri.documents.length > 0 &&
     santri.documents.every((d) => d.status === 'Valid') &&
     santri.status === 'Terverifikasi'
 
-  // 2. Status pembayaran daftar ulang
   const reregPaid =
     santri.pay === 'Daftar Ulang Lunas' ||
     santri.pay === 'Lunas Daftar Ulang' ||
     santri.pay === 'Lunas'
 
-  // 3. Tes sekarang bersifat pemetaan (placement test), dapat diakses begitu berkas valid!
   const canTakeExam = allDocsValid
-
-  // 4. Penempatan kamar terbuka begitu pendaftaran ulang lunas!
   const canSeeDorm = allDocsValid && reregPaid
 
   const invalidDocs = Array.isArray(santri.documents)
@@ -175,7 +171,7 @@ export function ApplicantPortalPage({
     {
       title: 'Formulir Pendaftaran',
       status: 'done',
-      desc: 'Selesai diisi & diajukan'
+      desc: 'Formulir Rp 350.000'
     },
     {
       title: 'Verifikasi Dokumen',
@@ -187,7 +183,7 @@ export function ApplicantPortalPage({
           : 'Menunggu verifikasi admin'
     },
     {
-      title: 'Daftar Ulang & Seragam',
+      title: 'Daftar Ulang & Biaya',
       status: reregPaid ? 'done' : allDocsValid ? 'pending' : 'locked',
       desc: reregPaid
         ? `Lunas (${reregFee.formatted})`
@@ -218,7 +214,6 @@ export function ApplicantPortalPage({
     }
   ]
 
-  // Locked Card Component
   function LockedCard({ icon: Icon = Lock, title, description, ctaLabel, onCta, children }) {
     return (
       <div className="flex min-h-[340px] flex-col items-center justify-center rounded-3xl border-2 border-dashed border-slate-200 bg-slate-50/50 p-10 text-center dark:border-white/10 dark:bg-white/[0.02]">
@@ -441,7 +436,7 @@ export function ApplicantPortalPage({
                   <div>
                     <h4 className="text-sm font-bold text-slate-900 dark:text-white">Rincian Biaya Transparan</h4>
                     <p className="text-[11px] text-slate-600 dark:text-slate-300">
-                      Daftar Ulang {reregFee.level}: <strong>{reregFee.formatted}</strong> + Perlengkapan
+                      Biaya Masuk: <strong>{admissionPackage.formattedTotal}</strong> + Daftar Ulang {reregFee.level} ({reregFee.formatted})
                     </p>
                   </div>
                 </div>
@@ -567,22 +562,77 @@ export function ApplicantPortalPage({
         </div>
       )}
 
-      {/* ── TAB 3: TAGIHAN & PEMBAYARAN (TRANSPARAN) ──────────────────── */}
+      {/* ── TAB 3: TAGIHAN & PEMBAYARAN RESMI ─────────────────────────── */}
       {currentTab === 'payment' && (
         <div className="space-y-6">
+          {/* TABEL BROSUR RESMI BIAYA PENDAFTARAN DARUL HAROMAIN (Rp 7.725.000) */}
+          <div className="overflow-hidden rounded-3xl border border-amber-300 bg-white shadow-soft dark:border-amber-700/40 dark:bg-[#192118]">
+            <div className="bg-[#284B2D] p-5 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-lime-300">
+                  Ketetapan Resmi Pondok Pesantren
+                </span>
+                <h3 className="text-lg font-black text-white">
+                  {admissionPackage.title}
+                </h3>
+                <p className="text-xs text-white/80">{admissionPackage.subtitle}</p>
+              </div>
+              <div className="text-left sm:text-right">
+                <span className="text-xs text-white/80">Jumlah Biaya Masuk:</span>
+                <p className="text-2xl font-black text-lime-300">{admissionPackage.formattedTotal}</p>
+              </div>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-amber-500 text-white font-bold uppercase text-[11px] tracking-wider">
+                  <tr>
+                    <th className="px-5 py-3">No</th>
+                    <th className="px-5 py-3">Keterangan Biaya</th>
+                    <th className="px-5 py-3">Peruntukan</th>
+                    <th className="px-5 py-3 text-right">Biaya (Rp)</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-white/5">
+                  {admissionPackage.items.map((it) => (
+                    <tr key={it.no} className="hover:bg-slate-50/60 dark:hover:bg-white/[0.02]">
+                      <td className="px-5 py-3 font-bold text-slate-400">{it.no}</td>
+                      <td className="px-5 py-3 font-bold text-slate-800 dark:text-white">{it.name}</td>
+                      <td className="px-5 py-3 text-slate-500 dark:text-slate-400">{it.desc}</td>
+                      <td className="px-5 py-3 text-right font-mono font-bold text-slate-900 dark:text-slate-100">{it.formatted}</td>
+                    </tr>
+                  ))}
+                  <tr className="bg-amber-50 font-black text-xs dark:bg-amber-950/30 text-amber-950 dark:text-amber-200 border-t-2 border-amber-400">
+                    <td colSpan={3} className="px-5 py-3.5 uppercase tracking-wider">Jumlah Keseluruhan Biaya Pendaftaran</td>
+                    <td className="px-5 py-3.5 text-right text-base text-brand-700 dark:text-brand-300">{admissionPackage.formattedTotal}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div className="p-3.5 bg-slate-50 border-t border-slate-100 dark:bg-white/5 dark:border-white/5 flex flex-col sm:flex-row justify-between items-center text-xs gap-2">
+              <span className="font-semibold text-slate-600 dark:text-slate-300 italic">
+                {admissionPackage.disclaimer}
+              </span>
+              <span className="text-slate-400">
+                Bogor, 27 Agustus 2026 &bull; Mengetahui, {committeeHead}
+              </span>
+            </div>
+          </div>
+
           <div className="grid gap-6 lg:grid-cols-3">
             <div className="space-y-6 lg:col-span-2">
-              {/* Rincian Tagihan */}
+              {/* Rincian Tagihan Pendaftaran Ulang & Perlengkapan */}
               <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-[#192118]">
                 <div className="flex items-center justify-between border-b border-slate-100 pb-4 dark:border-white/10">
                   <div>
-                    <h3 className="font-bold text-slate-900 dark:text-white">Rincian Biaya PPDB &amp; Perlengkapan</h3>
+                    <h3 className="font-bold text-slate-900 dark:text-white">Pendaftaran Ulang &amp; Perlengkapan Santri</h3>
                     <p className="text-xs text-slate-400">
                       Jenjang: <strong>{reregFee.level}</strong> &bull; Kategori: <strong>Santri {isPutri ? 'Putri' : 'Putra'}</strong>
                     </p>
                   </div>
                   <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300">
-                    Registrasi: LUNAS
+                    Formulir (350rb): LUNAS
                   </span>
                 </div>
 
@@ -738,7 +788,6 @@ export function ApplicantPortalPage({
         canTakeExam ? (
           <div className="grid gap-6 lg:grid-cols-3">
             <div className="space-y-6 lg:col-span-2">
-              {/* Asesmen Info Card */}
               <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-[#192118]">
                 <div className="flex items-center justify-between border-b border-slate-100 pb-4 dark:border-white/10">
                   <div>
@@ -784,7 +833,6 @@ export function ApplicantPortalPage({
                   </div>
                 </div>
 
-                {/* Penjelasan bahwa tes bukan eliminasi */}
                 <div className="mt-5 rounded-2xl bg-slate-50 p-4 border border-slate-100 dark:bg-white/5 dark:border-white/5 flex items-start gap-3 text-xs">
                   <Compass size={18} className="text-indigo-600 shrink-0 mt-0.5" />
                   <div>

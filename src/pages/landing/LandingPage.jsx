@@ -19,7 +19,8 @@ import {
   Printer,
   Compass,
   Check,
-  Info
+  Info,
+  BadgePercent
 } from 'lucide-react'
 import { officialFeeStructure, officialBankAccounts } from '../../data/mockFeeStructure'
 
@@ -31,14 +32,16 @@ export function LandingPage({
   const [genderTab, setGenderTab] = useState('putra') // 'putra' | 'putri'
   const [levelTab, setLevelTab] = useState('smp') // 'smp' | 'sma'
 
-  const { equipment, reregistrationFees, registrationFee, academicYear, committeeHead } = officialFeeStructure
+  const { equipment, reregistrationFees, registrationFee, admissionPackage, academicYear, committeeHead } = officialFeeStructure
 
   const reregAmount = levelTab === 'smp' ? reregistrationFees.smp.amount : reregistrationFees.sma.amount
   const reregFormatted = levelTab === 'smp' ? reregistrationFees.smp.formatted : reregistrationFees.sma.formatted
   const equipAmount = genderTab === 'putra' ? equipment.grandTotal.putra : equipment.grandTotal.putri
   const equipFormatted = genderTab === 'putra' ? equipment.grandTotal.formattedPutra : equipment.grandTotal.formattedPutri
-  const totalBiayaAwal = registrationFee.amount + reregAmount + equipAmount
-  const totalBiayaFormatted = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(totalBiayaAwal)
+  
+  // Total Biaya Lengkap: Biaya Pendaftaran Resmi (7.725.000) + Pendaftaran Ulang Jenjang + Perlengkapan
+  const totalBiayaMasukLengkap = admissionPackage.total + reregAmount + equipAmount
+  const totalBiayaMasukFormatted = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(totalBiayaMasukLengkap)
 
   return (
     <div className="min-h-screen bg-[#F8FAF7] text-slate-800 antialiased selection:bg-brand-500 selection:text-white dark:bg-[#111710] dark:text-slate-100">
@@ -162,65 +165,58 @@ export function LandingPage({
               </div>
             </div>
 
-            {/* Right Card / Visual */}
+            {/* Right Card / Visual Brosur Biaya Pendaftaran */}
             <div className="lg:col-span-5">
-              <div className="relative mx-auto max-w-md overflow-hidden rounded-[32px] border border-slate-200/80 bg-white p-6 shadow-xl dark:border-white/10 dark:bg-[#192118]">
-                <div className="flex items-center justify-between border-b border-slate-100 pb-4 dark:border-white/10">
-                  <div className="flex items-center gap-2.5">
-                    <div className="grid h-10 w-10 place-items-center rounded-xl bg-brand-50 text-brand-700 dark:bg-brand-950/40 dark:text-brand-300">
-                      <GraduationCap size={20} />
-                    </div>
-                    <div>
-                      <p className="text-xs font-bold text-slate-900 dark:text-white">Status Penerimaan {academicYear}</p>
-                      <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">&bull; Gelombang 1 Sedang Berjalan</p>
-                    </div>
-                  </div>
-                  <span className="rounded-full bg-brand-100 px-2.5 py-0.5 text-[10px] font-black text-brand-800 dark:bg-brand-900/40 dark:text-brand-300">
-                    RESMI
-                  </span>
+              <div className="relative mx-auto max-w-md overflow-hidden rounded-[32px] border border-amber-300/80 bg-white p-6 shadow-xl dark:border-amber-700/40 dark:bg-[#192118]">
+                {/* Header Kartu Oranye / Hijau Pesantren */}
+                <div className="rounded-2xl bg-gradient-to-r from-[#213f25] via-[#284B2D] to-[#1f4726] p-4 text-white text-center shadow-sm">
+                  <h3 className="text-sm font-black uppercase tracking-wider text-lime-300">
+                    Biaya Pendaftaran
+                  </h3>
+                  <p className="text-xs font-bold text-white/95">
+                    Pondok Pesantren Darul Haromain
+                  </p>
                 </div>
 
-                <div className="mt-5 space-y-3">
-                  <div className="rounded-2xl bg-brand-50/60 p-4 dark:bg-brand-950/20 border border-brand-100 dark:border-brand-900/30">
-                    <p className="text-[11px] font-bold text-brand-900 dark:text-brand-200 uppercase tracking-wider">
-                      Biaya Pendaftaran Ulang Santri
-                    </p>
-                    <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
-                      <div className="rounded-xl bg-white p-2.5 text-center shadow-xs dark:bg-white/5">
-                        <p className="text-[10px] text-slate-400">Jenjang SMP / MTs</p>
-                        <p className="text-base font-black text-brand-700 dark:text-brand-300">Rp 1.200.000</p>
-                      </div>
-                      <div className="rounded-xl bg-white p-2.5 text-center shadow-xs dark:bg-white/5">
-                        <p className="text-[10px] text-slate-400">Jenjang SMA / SMK</p>
-                        <p className="text-base font-black text-brand-700 dark:text-brand-300">Rp 1.400.000</p>
-                      </div>
-                    </div>
+                {/* Tabel Biaya Pendaftaran Brosur Resmi */}
+                <div className="mt-4 overflow-hidden rounded-2xl border border-amber-200 dark:border-amber-900/30">
+                  <div className="grid grid-cols-12 bg-amber-500 text-white font-black text-xs uppercase px-3 py-2">
+                    <span className="col-span-8">Keterangan</span>
+                    <span className="col-span-4 text-right">Biaya (Rp)</span>
                   </div>
-
-                  <div className="rounded-2xl border border-slate-100 bg-slate-50/60 p-4 dark:border-white/5 dark:bg-white/[0.02]">
-                    <div className="flex items-center justify-between text-xs font-semibold">
-                      <span className="text-slate-600 dark:text-slate-300">Perlengkapan Santri Baru Lengkap:</span>
-                      <span className="font-bold text-slate-900 dark:text-white">Kasur + 10 Kitab + 3 Seragam</span>
-                    </div>
-                    <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">
-                      Putra: <strong>Rp 1.967.500</strong> &bull; Putri: <strong>Rp 2.017.500</strong>
-                    </p>
-                  </div>
-
-                  <div className="rounded-2xl border border-emerald-200 bg-emerald-50/50 p-4 dark:border-emerald-900/30 dark:bg-emerald-950/20">
-                    <div className="flex items-start gap-2.5">
-                      <Info size={16} className="text-emerald-700 dark:text-emerald-300 shrink-0 mt-0.5" />
-                      <div className="text-[11px] text-emerald-900 dark:text-emerald-200">
-                        <p className="font-bold">Asesmen Pemetaan Kemampuan (Bukan Gugur)</p>
-                        <p className="mt-0.5 text-emerald-800 dark:text-emerald-300">
-                          Tes Al-Qur'an &amp; CBT semata-mata untuk mengukur tingkat kemampuan awal santri guna pembagian kelas &amp; pembinaan intensif.
-                        </p>
+                  <div className="divide-y divide-slate-100 text-xs dark:divide-white/5 bg-white dark:bg-white/[0.02]">
+                    {admissionPackage.items.map((it, idx) => (
+                      <div key={idx} className="grid grid-cols-12 px-3 py-2.5 items-center">
+                        <span className="col-span-8 font-semibold text-slate-800 dark:text-slate-200">{it.name}</span>
+                        <span className="col-span-4 text-right font-mono font-bold text-slate-900 dark:text-white">{it.formatted}</span>
                       </div>
+                    ))}
+                    <div className="grid grid-cols-12 px-3 py-3 bg-amber-50 font-black text-xs dark:bg-amber-950/30 text-amber-900 dark:text-amber-200 border-t-2 border-amber-400">
+                      <span className="col-span-8 uppercase tracking-wider">Jumlah</span>
+                      <span className="col-span-4 text-right text-sm text-brand-700 dark:text-brand-300">
+                        {admissionPackage.formattedTotal}
+                      </span>
                     </div>
                   </div>
                 </div>
 
-                <div className="mt-5 border-t border-slate-100 pt-4 dark:border-white/10 flex items-center justify-between text-[11px]">
+                <p className="mt-2 text-[11px] font-semibold italic text-slate-500 text-center dark:text-slate-400">
+                  {admissionPackage.disclaimer}
+                </p>
+
+                {/* Info Pendaftaran Ulang Jenjang */}
+                <div className="mt-4 rounded-xl bg-slate-50 p-3 text-xs border border-slate-100 dark:bg-white/5 dark:border-white/5 space-y-1">
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Pendaftaran Ulang SMP / MTs:</span>
+                    <strong className="text-brand-700 dark:text-brand-300">Rp 1.200.000</strong>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Pendaftaran Ulang SMA / SMK / MA:</span>
+                    <strong className="text-brand-700 dark:text-brand-300">Rp 1.400.000</strong>
+                  </div>
+                </div>
+
+                <div className="mt-4 border-t border-slate-100 pt-3 dark:border-white/10 flex items-center justify-between text-[11px]">
                   <span className="text-slate-500">Ketua Panitia PSB:</span>
                   <span className="font-bold text-slate-800 dark:text-slate-200">{committeeHead}</span>
                 </div>
@@ -327,8 +323,62 @@ export function LandingPage({
             </p>
           </div>
 
+          {/* Tabel Brosur Resmi Biaya Pendaftaran (Rp 7.725.000) */}
+          <div className="mt-10 overflow-hidden rounded-3xl border border-amber-300 bg-white shadow-soft dark:border-amber-700/40 dark:bg-[#192118]">
+            <div className="bg-[#284B2D] p-5 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-lime-300">
+                  Brosur Resmi PPDB Darul Haromain
+                </span>
+                <h3 className="text-lg font-bold text-white">
+                  {admissionPackage.title}
+                </h3>
+              </div>
+              <div className="text-left sm:text-right">
+                <span className="text-xs text-white/80">Total Biaya Masuk Pokok:</span>
+                <p className="text-2xl font-black text-lime-300">{admissionPackage.formattedTotal}</p>
+              </div>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-amber-500 text-white font-bold uppercase text-[11px] tracking-wider">
+                  <tr>
+                    <th className="px-6 py-3">No</th>
+                    <th className="px-6 py-3">Keterangan Biaya</th>
+                    <th className="px-6 py-3">Peruntukan</th>
+                    <th className="px-6 py-3 text-right">Nominal (Rp)</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-white/5">
+                  {admissionPackage.items.map((it) => (
+                    <tr key={it.no} className="hover:bg-slate-50/60 dark:hover:bg-white/[0.02]">
+                      <td className="px-6 py-3.5 font-bold text-slate-400">{it.no}</td>
+                      <td className="px-6 py-3.5 font-bold text-slate-800 dark:text-white">{it.name}</td>
+                      <td className="px-6 py-3.5 text-slate-500 dark:text-slate-400">{it.desc}</td>
+                      <td className="px-6 py-3.5 text-right font-mono font-bold text-slate-900 dark:text-slate-100">{it.formatted}</td>
+                    </tr>
+                  ))}
+                  <tr className="bg-amber-50 font-black text-xs dark:bg-amber-950/30 text-amber-950 dark:text-amber-200 border-t-2 border-amber-400">
+                    <td colSpan={3} className="px-6 py-3.5 uppercase tracking-wider">Jumlah Keseluruhan Biaya Pendaftaran</td>
+                    <td className="px-6 py-3.5 text-right text-base text-brand-700 dark:text-brand-300">{admissionPackage.formattedTotal}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div className="p-4 bg-slate-50 border-t border-slate-100 dark:bg-white/5 dark:border-white/5 flex flex-col sm:flex-row justify-between items-center text-xs gap-2">
+              <span className="font-semibold text-slate-600 dark:text-slate-300 italic">
+                {admissionPackage.disclaimer}
+              </span>
+              <span className="text-slate-400">
+                Bogor, 27 Agustus 2026 &bull; Mengetahui, {committeeHead}
+              </span>
+            </div>
+          </div>
+
           {/* Interactive Selector: Jenjang & Jenis Kelamin */}
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+          <div className="mt-12 flex flex-wrap items-center justify-center gap-4">
             <div className="flex items-center gap-1 rounded-2xl border border-slate-200 bg-white p-1 dark:border-white/10 dark:bg-[#192118]">
               <span className="px-3 text-xs font-bold text-slate-400">Jenjang:</span>
               <button
@@ -387,22 +437,22 @@ export function LandingPage({
             <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
               <div>
                 <span className="text-[11px] font-bold uppercase tracking-wider text-brand-800 dark:text-brand-300">
-                  Simulasi Estimasi Biaya Awal Masuk Pesantren
+                  Simulasi Estimasi Biaya Lengkap Santri Baru
                 </span>
                 <h3 className="text-lg font-black text-slate-900 dark:text-white">
                   Pilihan: Jenjang {levelTab.toUpperCase()} &bull; Santri {genderTab === 'putra' ? 'Putra' : 'Putri'}
                 </h3>
                 <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">
-                  Rincian: Formulir ({registrationFee.formatted}) + Daftar Ulang ({reregFormatted}) + Perlengkapan Lengkap ({equipFormatted})
+                  Biaya Masuk Pokok ({admissionPackage.formattedTotal}) + Daftar Ulang Jenjang ({reregFormatted}) + Perlengkapan Kasur/Kitab/Seragam ({equipFormatted})
                 </p>
               </div>
               <div className="text-right">
-                <p className="text-xs text-slate-500 dark:text-slate-400">Total Keseluruhan</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Total Keseluruhan Lengkap</p>
                 <p className="text-2xl font-black text-brand-700 dark:text-brand-300 sm:text-3xl">
-                  {totalBiayaFormatted}
+                  {totalBiayaMasukFormatted}
                 </p>
                 <span className="text-[10px] text-emerald-700 dark:text-emerald-400 font-bold">
-                  Sudah Termasuk Kasur, 10 Kitab, &amp; 3 Stel Seragam
+                  Sudah Termasuk Uang Pangkal, Infak, Syahriah, Kasur, 10 Kitab, &amp; 3 Seragam
                 </span>
               </div>
             </div>
@@ -701,4 +751,3 @@ export function LandingPage({
     </div>
   )
 }
-

@@ -431,8 +431,6 @@ export function FinancePage({ onNotify }) {
               className="w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-xs text-slate-800 focus:border-brand-500 focus:outline-none dark:border-white/10 dark:bg-[#1f281e] dark:text-white"
             >
               <option value="Transfer BSI">Transfer Bank Syariah Indonesia (BSI)</option>
-              <option value="Transfer BCA">Transfer Bank Central Asia (BCA)</option>
-              <option value="Transfer Mandiri">Transfer Bank Mandiri</option>
               <option value="Tunai di Kasir PPDB">Tunai di Sekretariat PPDB</option>
             </select>
           </div>

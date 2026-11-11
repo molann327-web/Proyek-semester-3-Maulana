@@ -23,7 +23,7 @@ export const mockFaqs = [
     items: [
       {
         q: 'Berapa biaya pendaftaran awal dan bagaimana cara pembayarannya?',
-        a: 'Biaya pendaftaran formulir adalah Rp 250.000,- yang dapat dibayarkan melalui transfer ke Virtual Account Bank Syariah Indonesia (BSI), BCA, Bank Mandiri, atau tunai di sekretariat PPDB.'
+        a: 'Biaya formulir pendaftaran adalah Rp 350.000,- yang dapat dibayarkan melalui transfer ke rekening resmi Bank Syariah Indonesia (BSI) Ka Fatkhan (7335153493) atau melalui konfirmasi panitia.'
       },
       {
         q: 'Apakah biaya daftar ulang (uang pangkal) dapat diangsur?',

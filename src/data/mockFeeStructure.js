@@ -109,24 +109,12 @@ export const officialFeeStructure = {
   }
 }
 
-// Rekening Bank Resmi PPDB Darul Haromain
+// Rekening Bank Resmi PPDB Darul Haromain (Tunggal melalui BSI Ka Fatkhan)
 export const officialBankAccounts = [
   {
     bank: 'Bank Syariah Indonesia (BSI)',
     accountNumber: '7335153493',
     accountName: 'Fatkhan (Ketua Panitia PSB)',
-    badge: 'Utama / Rekomendasi'
-  },
-  {
-    bank: 'Bank Central Asia (BCA)',
-    accountNumber: '883-0987-123',
-    accountName: 'Yayasan Darul Haromain',
-    badge: 'BCA Virtual'
-  },
-  {
-    bank: 'Bank Mandiri',
-    accountNumber: '133-00-9876543-1',
-    accountName: 'Darul Haromain Penerimaan Santri',
-    badge: 'Mandiri Livin'
+    badge: 'Rekening Resmi Utama'
   }
 ]

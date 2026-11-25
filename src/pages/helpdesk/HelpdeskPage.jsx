@@ -16,7 +16,8 @@ import { mockFaqs, mockChatMessages, mockHelpdeskTickets, generateSmartHelpdeskR
 import { StatusBadge } from '../../components/common/StatusBadge'
 import { Modal } from '../../components/common/Modal'
 
-export function HelpdeskPage({ onNotify }) {
+export function HelpdeskPage({ onNotify, currentUser }) {
+  const isApplicant = currentUser?.roleId === 'applicant'
   const [faqs, setFaqs] = useState(mockFaqs)
   const [faqSearch, setFaqSearch] = useState('')
   const [chatMessages, setChatMessages] = useState(mockChatMessages)
@@ -108,17 +109,21 @@ export function HelpdeskPage({ onNotify }) {
             Helpdesk & Pusat Informasi PPDB
           </h1>
           <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-            Layanan tanya jawab pendaftaran, konsultasi interaktif dengan panitia, dan penanganan tiket keluhan wali santri.
+            {isApplicant
+              ? 'Layanan informasi resmi, tanya jawab (FAQ) pendaftaran, dan konsultasi interaktif langsung dengan panitia PPDB.'
+              : 'Layanan tanya jawab pendaftaran, konsultasi interaktif dengan panitia, dan penanganan tiket keluhan wali santri.'}
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={() => setIsNewTicketOpen(true)}
-          className="flex h-10 items-center gap-2 rounded-xl bg-brand-500 px-4 text-xs font-bold text-white shadow-md shadow-brand-500/20 hover:bg-brand-600"
-        >
-          <Plus size={15} /> Buat Tiket Pertanyaan Baru
-        </button>
+        {!isApplicant && (
+          <button
+            type="button"
+            onClick={() => setIsNewTicketOpen(true)}
+            className="flex h-10 items-center gap-2 rounded-xl bg-brand-500 px-4 text-xs font-bold text-white shadow-md shadow-brand-500/20 hover:bg-brand-600"
+          >
+            <Plus size={15} /> Buat Tiket Pertanyaan Baru
+          </button>
+        )}
       </div>
 
       {/* Main Grid: FAQ on Left, Live Chat on Right */}
@@ -242,40 +247,42 @@ export function HelpdeskPage({ onNotify }) {
         </div>
       </div>
 
-      {/* Ticket List Section */}
-      <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-soft dark:border-white/10 dark:bg-[#192118]">
-        <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/10">
-          <div>
-            <h3 className="text-base font-bold text-slate-800 dark:text-white">
-              Daftar Tiket Pengaduan & Konsultasi Wali Santri
-            </h3>
-            <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
-              Riwayat tiket bantuan teknis pendaftaran santri baru.
-            </p>
+      {/* Ticket List Section - Khusus Staf / Panitia */}
+      {!isApplicant && (
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-soft dark:border-white/10 dark:bg-[#192118]">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-white/10">
+            <div>
+              <h3 className="text-base font-bold text-slate-800 dark:text-white">
+                Daftar Tiket Pengaduan & Konsultasi Wali Santri
+              </h3>
+              <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                Riwayat tiket bantuan teknis pendaftaran santri baru (Panel Internal Panitia).
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-4 divide-y divide-slate-100 dark:divide-white/5">
+            {tickets.map((t) => (
+              <div key={t.id} className="flex flex-col gap-2 py-3 text-xs sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono font-bold text-brand-600">{t.id}</span>
+                    <span className="font-bold text-slate-800 dark:text-white">{t.subject}</span>
+                  </div>
+                  <p className="mt-0.5 text-[11px] text-slate-400">
+                    Pengaju: <b className="text-slate-600 dark:text-slate-300">{t.applicantName}</b> · Kategori: {t.category}
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <span className="text-[11px] text-slate-400">{t.date}</span>
+                  <StatusBadge status={t.status} />
+                </div>
+              </div>
+            ))}
           </div>
         </div>
-
-        <div className="mt-4 divide-y divide-slate-100 dark:divide-white/5">
-          {tickets.map((t) => (
-            <div key={t.id} className="flex flex-col gap-2 py-3 text-xs sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="font-mono font-bold text-brand-600">{t.id}</span>
-                  <span className="font-bold text-slate-800 dark:text-white">{t.subject}</span>
-                </div>
-                <p className="mt-0.5 text-[11px] text-slate-400">
-                  Pengaju: <b className="text-slate-600 dark:text-slate-300">{t.applicantName}</b> · Kategori: {t.category}
-                </p>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <span className="text-[11px] text-slate-400">{t.date}</span>
-                <StatusBadge status={t.status} />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+      )}
 
       {/* New Ticket Modal */}
       <Modal

@@ -309,7 +309,7 @@ export default function App() {
       )}
 
       {activeModule === 'Helpdesk & FAQ' && (
-        <HelpdeskPage onNotify={notify} />
+        <HelpdeskPage onNotify={notify} currentUser={currentUser} />
       )}
 
       {activeModule === 'Manajemen Akun & Role' && (

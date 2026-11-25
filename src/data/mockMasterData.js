@@ -5,12 +5,12 @@ export const mockPesantrenIdentity = {
   motto: 'Membangun Generasi Qur\'ani, Berakhlak Mulia, dan Berwawasan Global',
   nisp: '510032010088',
   skKemenag: 'Kemenag No. 421.2/089/Pondok/2018',
-  address: 'Jl. Raya Ciapus Km. 7 No. 45, Tamansari, Kabupaten Bogor, Jawa Barat 16610',
-  phone: '(0251) 8382901 / 0812-3456-7890',
+  address: 'Jl. Pesantren No. 14, Bogor Barat, Kota Bogor, Jawa Barat',
+  phone: '0813-8025-2083',
   email: 'sekretariat@darulharumain.sch.id',
   website: 'https://darulharumain.sch.id',
   headmaster: 'K.H. Muhammad Shodiq, M.A.',
-  ppdbChairman: 'Ustadz Farid Ridwan, S.Pd.I'
+  ppdbChairman: 'Fatkan Nur Fiqli, S.Pd. (Ka Fatkhan)'
 }
 
 export const mockWaves = [

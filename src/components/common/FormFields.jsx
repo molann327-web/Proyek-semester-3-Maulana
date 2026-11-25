@@ -159,12 +159,52 @@ export function FileUploadField({
   fileSize,
   isUploaded,
   onUploadMock,
-  accept = 'PDF, JPG, PNG (Maks 2MB)',
+  onFileSelect,
+  accept = 'PDF, JPG, PNG (Maks 3MB)',
   required = false,
   error
 }) {
+  const inputRef = React.useRef(null)
+
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    const formatSize = (bytes) => {
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB'
+      return (bytes / (1024 * 1024)).toFixed(2) + ' MB'
+    }
+
+    if (onFileSelect) {
+      onFileSelect(file, {
+        name: file.name,
+        size: formatSize(file.size),
+        type: file.type,
+        url: URL.createObjectURL(file)
+      })
+    } else if (onUploadMock) {
+      onUploadMock()
+    }
+  }
+
+  const handleTriggerUpload = () => {
+    if (inputRef.current) {
+      inputRef.current.click()
+    } else if (onUploadMock) {
+      onUploadMock()
+    }
+  }
+
   return (
     <div className="space-y-1.5">
+      <input
+        ref={inputRef}
+        type="file"
+        accept=".pdf,.png,.jpg,.jpeg"
+        className="hidden"
+        onChange={handleFileChange}
+      />
+
       <div className="flex items-center justify-between">
         <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
           {label} {required && <span className="text-rose-500">*</span>}
@@ -179,15 +219,16 @@ export function FileUploadField({
       </div>
 
       <div
-        className={`relative flex items-center justify-between rounded-xl border p-3.5 transition-all ${
+        onClick={handleTriggerUpload}
+        className={`relative flex cursor-pointer items-center justify-between rounded-xl border p-3.5 transition-all ${
           isUploaded
-            ? 'border-emerald-300 bg-emerald-50/50 dark:border-emerald-800/60 dark:bg-emerald-950/20'
+            ? 'border-emerald-300 bg-emerald-50/50 hover:bg-emerald-50 dark:border-emerald-800/60 dark:bg-emerald-950/20'
             : 'border-dashed border-slate-300 bg-slate-50/70 hover:border-brand-400 hover:bg-brand-50/30 dark:border-white/20 dark:bg-white/[0.02]'
         }`}
       >
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 min-w-0 pr-2">
           <div
-            className={`grid h-9 w-9 place-items-center rounded-lg ${
+            className={`grid h-9 w-9 shrink-0 place-items-center rounded-lg ${
               isUploaded
                 ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300'
                 : 'bg-slate-200 text-slate-500 dark:bg-white/10 dark:text-slate-400'
@@ -195,26 +236,29 @@ export function FileUploadField({
           >
             <UploadCloud size={18} />
           </div>
-          <div>
-            <p className="text-xs font-semibold text-slate-800 dark:text-slate-200">
-              {fileName || 'Pilih dokumen untuk diunggah (simulasi)'}
+          <div className="min-w-0">
+            <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 truncate">
+              {fileName || 'Klik untuk pilih file berkas (PDF, JPG, PNG)'}
             </p>
             <p className="text-[10px] text-slate-400">
-              {fileSize ? `${fileSize} · Dokumen siap diverifikasi` : accept}
+              {fileSize ? `${fileSize} · Berkas siap diverifikasi` : accept}
             </p>
           </div>
         </div>
 
         <button
           type="button"
-          onClick={onUploadMock}
-          className={`rounded-lg px-3 py-1.5 text-xs font-bold transition ${
+          onClick={(e) => {
+            e.stopPropagation()
+            handleTriggerUpload()
+          }}
+          className={`shrink-0 rounded-lg px-3 py-1.5 text-xs font-bold transition ${
             isUploaded
               ? 'border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-white/5 dark:text-slate-200'
               : 'bg-brand-500 text-white shadow-sm hover:bg-brand-600'
           }`}
         >
-          {isUploaded ? 'Ganti File' : 'Unggah'}
+          {isUploaded ? 'Ganti File' : 'Pilih Berkas'}
         </button>
       </div>
 

@@ -65,6 +65,20 @@ export function MultiStepRegistrationModal({
     setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
+  const handleRealUpload = (docKey, file, meta) => {
+    setFormData((prev) => ({
+      ...prev,
+      [docKey]: {
+        uploaded: true,
+        name: meta.name,
+        size: meta.size,
+        url: meta.url,
+        file: file
+      }
+    }))
+    onNotify(`Berkas ${meta.name} (${meta.size}) berhasil dipilih!`)
+  }
+
   const handleMockUpload = (docKey, defaultName) => {
     setFormData((prev) => ({
       ...prev,
@@ -502,6 +516,7 @@ export function MultiStepRegistrationModal({
               isUploaded={formData.docKk.uploaded}
               fileName={formData.docKk.name}
               fileSize={formData.docKk.size}
+              onFileSelect={(file, meta) => handleRealUpload('docKk', file, meta)}
               onUploadMock={() => handleMockUpload('docKk', 'scan_kk_asli.pdf')}
             />
 
@@ -511,6 +526,7 @@ export function MultiStepRegistrationModal({
               isUploaded={formData.docAkta.uploaded}
               fileName={formData.docAkta.name}
               fileSize={formData.docAkta.size}
+              onFileSelect={(file, meta) => handleRealUpload('docAkta', file, meta)}
               onUploadMock={() => handleMockUpload('docAkta', 'akta_kelahiran.pdf')}
             />
 
@@ -520,6 +536,7 @@ export function MultiStepRegistrationModal({
               isUploaded={formData.docIjazah.uploaded}
               fileName={formData.docIjazah.name}
               fileSize={formData.docIjazah.size}
+              onFileSelect={(file, meta) => handleRealUpload('docIjazah', file, meta)}
               onUploadMock={() => handleMockUpload('docIjazah', 'skl_sekolah_asal.pdf')}
             />
 
@@ -529,6 +546,7 @@ export function MultiStepRegistrationModal({
               isUploaded={formData.docFoto.uploaded}
               fileName={formData.docFoto.name}
               fileSize={formData.docFoto.size}
+              onFileSelect={(file, meta) => handleRealUpload('docFoto', file, meta)}
               onUploadMock={() => handleMockUpload('docFoto', 'pas_foto_formal.jpg')}
             />
 
@@ -538,6 +556,7 @@ export function MultiStepRegistrationModal({
               isUploaded={formData.docSehat.uploaded}
               fileName={formData.docSehat.name}
               fileSize={formData.docSehat.size}
+              onFileSelect={(file, meta) => handleRealUpload('docSehat', file, meta)}
               onUploadMock={() => handleMockUpload('docSehat', 'surat_keterangan_sehat.pdf')}
             />
           </div>

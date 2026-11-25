@@ -28,8 +28,12 @@ import {
   Compass,
   Info,
   BookOpen,
-  Receipt
+  Receipt,
+  Eye,
+  Trash2,
+  ExternalLink
 } from 'lucide-react'
+import { Modal } from '../../components/common/Modal'
 import { RegistrationCardModal } from '../registration/RegistrationCardModal'
 import { OnlineExamSimulationModal } from '../exam/OnlineExamSimulationModal'
 import { ReceiptModal } from '../finance/ReceiptModal'
@@ -49,6 +53,8 @@ export function ApplicantPortalPage({
   const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false)
   const [copiedBank, setCopiedBank] = useState(null)
   const [showEquipDetail, setShowEquipDetail] = useState(false)
+  const [paymentProof, setPaymentProof] = useState(null)
+  const [previewModalItem, setPreviewModalItem] = useState(null)
 
   const { reregistrationFees, equipment, registrationFee, admissionPackage, committeeHead, academicYear } = officialFeeStructure
 
@@ -113,11 +119,94 @@ export function ApplicantPortalPage({
   const totalBiayaDaftarUlang = reregFee.amount + equipTotal
   const totalBiayaDaftarUlangFormatted = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(totalBiayaDaftarUlang)
 
+  const [documentsList, setDocumentsList] = useState(santri.documents || [])
+
+  const formatSize = (bytes) => {
+    if (!bytes || isNaN(bytes)) return '1.2 MB'
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB'
+    return (bytes / (1024 * 1024)).toFixed(2) + ' MB'
+  }
+
+  const handleUploadDocument = (e, docIdx, docName) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    const allowedExtensions = ['pdf', 'png', 'jpg', 'jpeg']
+    const extension = file.name.split('.').pop().toLowerCase()
+    if (!allowedExtensions.includes(extension)) {
+      onNotify('Format berkas tidak didukung! Mohon pilih format PDF, PNG, atau JPG.', 'error')
+      return
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      onNotify('Ukuran berkas terlalu besar! Maksimal 5 MB.', 'error')
+      return
+    }
+
+    const fileUrl = URL.createObjectURL(file)
+    const updated = documentsList.map((d, i) => {
+      if (i === docIdx) {
+        return {
+          ...d,
+          file: file.name,
+          size: formatSize(file.size),
+          status: 'Valid',
+          fileUrl: fileUrl,
+          fileType: file.type,
+          uploadedAt: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+        }
+      }
+      return d
+    })
+
+    setDocumentsList(updated)
+    onNotify(`Berkas ${docName} berhasil diunggah: ${file.name} (${formatSize(file.size)})!`)
+  }
+
+  const processPaymentProofFile = (file) => {
+    if (!file) return
+
+    const allowedExtensions = ['pdf', 'png', 'jpg', 'jpeg']
+    const extension = file.name.split('.').pop().toLowerCase()
+    if (!allowedExtensions.includes(extension)) {
+      onNotify('Format bukti transfer tidak didukung! Mohon unggah format PDF, PNG, atau JPG.', 'error')
+      return
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      onNotify('Ukuran file bukti transfer terlalu besar! Maksimal 5 MB.', 'error')
+      return
+    }
+
+    const fileUrl = URL.createObjectURL(file)
+    setPaymentProof({
+      name: file.name,
+      size: formatSize(file.size),
+      type: file.type,
+      url: fileUrl,
+      uploadedAt: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+      status: 'Menunggu Verifikasi Bendahara'
+    })
+
+    onNotify(`Bukti transfer ${file.name} (${formatSize(file.size)}) berhasil diunggah! Sedang menunggu verifikasi bendahara.`)
+  }
+
+  const handleUploadPaymentProof = (e) => {
+    const file = e.target.files?.[0]
+    if (file) processPaymentProofFile(file)
+  }
+
+  const handleDropPaymentProof = (e) => {
+    e.preventDefault()
+    const file = e.dataTransfer?.files?.[0]
+    if (file) processPaymentProofFile(file)
+  }
+
   // ── ACCESS CONTROL LOGIC BARU ──────────────────────────────────────────────
   const allDocsValid =
-    Array.isArray(santri.documents) &&
-    santri.documents.length > 0 &&
-    santri.documents.every((d) => d.status === 'Valid') &&
+    Array.isArray(documentsList) &&
+    documentsList.length > 0 &&
+    documentsList.every((d) => d.status === 'Valid' || d.status === 'Terverifikasi') &&
     santri.status === 'Terverifikasi'
 
   const reregPaid =
@@ -128,8 +217,8 @@ export function ApplicantPortalPage({
   const canTakeExam = allDocsValid
   const canSeeDorm = allDocsValid && reregPaid
 
-  const invalidDocs = Array.isArray(santri.documents)
-    ? santri.documents.filter((d) => d.status !== 'Valid')
+  const invalidDocs = Array.isArray(documentsList)
+    ? documentsList.filter((d) => d.status !== 'Valid' && d.status !== 'Terverifikasi')
     : []
 
   // ── TAB DEFINITIONS ───────────────────────────────────────────────────────
@@ -520,41 +609,62 @@ export function ApplicantPortalPage({
           </div>
 
           <div className="mt-5 space-y-3">
-            {santri.documents.map((doc, idx) => (
+            {documentsList.map((doc, idx) => (
               <div
                 key={idx}
                 className="flex flex-col justify-between gap-3 rounded-2xl border border-slate-200/80 bg-slate-50/50 p-4 sm:flex-row sm:items-center dark:border-white/10 dark:bg-white/[0.02]"
               >
-                <div className="flex items-center gap-3.5">
+                <div className="flex items-center gap-3.5 min-w-0 pr-2">
                   <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-brand-100 text-brand-700 dark:bg-brand-900/40 dark:text-brand-300">
                     <FileText size={20} />
                   </div>
-                  <div>
-                    <p className="text-xs font-bold text-slate-900 dark:text-white">{doc.name}</p>
-                    <p className="text-[11px] text-slate-400">
-                      File: {doc.file} &bull; Ukuran: {doc.size}
+                  <div className="min-w-0">
+                    <p className="text-xs font-bold text-slate-900 dark:text-white truncate">{doc.name}</p>
+                    <p className="text-[11px] text-slate-500 truncate">
+                      File: <span className="font-semibold text-slate-700 dark:text-slate-300">{doc.file}</span> &bull; Ukuran: {doc.size}
+                      {doc.uploadedAt && <span className="ml-1 text-slate-400">&bull; Diunggah: {doc.uploadedAt}</span>}
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3">
-                  <span className="rounded-full bg-emerald-100 px-3 py-1 text-[11px] font-bold text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300">
+                <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+                  <span className={`rounded-full px-3 py-1 text-[11px] font-bold ${
+                    doc.status === 'Valid'
+                      ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300'
+                      : 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300'
+                  }`}>
                     {doc.status}
                   </span>
+
+                  {/* Input File Nyata untuk Setiap Dokumen */}
+                  <input
+                    type="file"
+                    id={`doc-upload-${idx}`}
+                    accept=".pdf,.png,.jpg,.jpeg"
+                    className="hidden"
+                    onChange={(e) => handleUploadDocument(e, idx, doc.name)}
+                  />
+
                   <button
                     type="button"
-                    onClick={() => onNotify(`Mengunduh file pratinjau ${doc.file} (simulasi)`)}
-                    className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-100 dark:border-white/10 dark:bg-white/5 dark:text-slate-300"
+                    onClick={() => {
+                      if (doc.fileUrl) {
+                        setPreviewModalItem({ title: doc.name, url: doc.fileUrl, type: doc.fileType, name: doc.file })
+                      } else {
+                        onNotify(`Pratinjau dokumen ${doc.name} (${doc.file}) siap diakses`)
+                      }
+                    }}
+                    className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 dark:border-white/10 dark:bg-white/5 dark:text-slate-300"
                   >
-                    <Download size={14} /> Unduh
+                    <Eye size={14} /> Lihat
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => onNotify(`Buka form unggah ulang ${doc.name} (simulasi)`)}
-                    className="flex items-center gap-1.5 rounded-xl border border-brand-200 bg-brand-50 px-3 py-1.5 text-xs font-semibold text-brand-700 hover:bg-brand-100 dark:border-brand-900/50 dark:bg-brand-950/40 dark:text-brand-300"
+
+                  <label
+                    htmlFor={`doc-upload-${idx}`}
+                    className="flex cursor-pointer items-center gap-1.5 rounded-xl border border-brand-200 bg-brand-50 px-3 py-1.5 text-xs font-semibold text-brand-700 hover:bg-brand-100 active:scale-95 transition dark:border-brand-900/50 dark:bg-brand-950/40 dark:text-brand-300"
                   >
-                    <UploadCloud size={14} /> Ganti File
-                  </button>
+                    <UploadCloud size={14} /> {doc.file ? 'Ganti File' : 'Unggah File'}
+                  </label>
                 </div>
               </div>
             ))}
@@ -733,23 +843,101 @@ export function ApplicantPortalPage({
 
               {/* Upload Proof */}
               <div className="rounded-3xl border border-slate-200/80 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-[#192118]">
-                <h3 className="font-bold text-slate-900 dark:text-white">Konfirmasi Pembayaran Transfer</h3>
-                <p className="text-xs text-slate-400">Unggah bukti transfer untuk diverifikasi oleh bendahara pesantren</p>
-
-                <div className="mt-4 rounded-2xl border-2 border-dashed border-slate-200 p-6 text-center dark:border-white/10">
-                  <UploadCloud size={32} className="mx-auto text-brand-500" />
-                  <p className="mt-2 text-xs font-bold text-slate-800 dark:text-white">
-                    Tarik berkas bukti transfer ke sini atau klik tombol di bawah
-                  </p>
-                  <p className="mt-1 text-[11px] text-slate-400">Format JPG, PNG, atau PDF (Maks. 3 MB)</p>
-                  <button
-                    type="button"
-                    onClick={() => onNotify('Simulasi: Bukti transfer berhasil diunggah dan dikirim ke bendahara!')}
-                    className="mt-3 rounded-xl bg-brand-500 px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-brand-600"
-                  >
-                    Pilih Bukti Transfer
-                  </button>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-bold text-slate-900 dark:text-white">Konfirmasi Pembayaran Transfer</h3>
+                    <p className="text-xs text-slate-400">Unggah bukti transfer untuk diverifikasi oleh bendahara pesantren</p>
+                  </div>
+                  {paymentProof && (
+                    <span className="rounded-full bg-amber-100 px-3 py-1 text-[11px] font-bold text-amber-800 dark:bg-amber-900/40 dark:text-amber-300">
+                      {paymentProof.status}
+                    </span>
+                  )}
                 </div>
+
+                {/* Input File Bukti Pembayaran */}
+                <input
+                  type="file"
+                  id="payment-proof-upload"
+                  accept=".png,.jpg,.jpeg,.pdf"
+                  className="hidden"
+                  onChange={handleUploadPaymentProof}
+                />
+
+                {!paymentProof ? (
+                  <div
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={handleDropPaymentProof}
+                    className="mt-4 rounded-2xl border-2 border-dashed border-slate-200 p-6 text-center transition hover:border-brand-500 hover:bg-brand-50/20 dark:border-white/10"
+                  >
+                    <UploadCloud size={32} className="mx-auto text-brand-500" />
+                    <p className="mt-2 text-xs font-bold text-slate-800 dark:text-white">
+                      Tarik berkas bukti transfer ke sini atau klik tombol di bawah
+                    </p>
+                    <p className="mt-1 text-[11px] text-slate-400">Mendukung format JPG, PNG, atau PDF (Maks. 5 MB)</p>
+                    <label
+                      htmlFor="payment-proof-upload"
+                      className="mt-3 inline-flex cursor-pointer items-center gap-2 rounded-xl bg-brand-500 px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-brand-600 active:scale-95 transition"
+                    >
+                      <UploadCloud size={15} /> Pilih Bukti Transfer
+                    </label>
+                  </div>
+                ) : (
+                  <div className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50/40 p-4 dark:border-emerald-900/40 dark:bg-emerald-950/20">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <div className="flex items-center gap-3 min-w-0 pr-2">
+                        {paymentProof.type?.startsWith('image/') ? (
+                          <img
+                            src={paymentProof.url}
+                            alt="Preview Bukti"
+                            className="h-14 w-14 rounded-xl object-cover border border-emerald-300 shrink-0"
+                          />
+                        ) : (
+                          <div className="grid h-14 w-14 place-items-center rounded-xl bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 shrink-0">
+                            <FileText size={24} />
+                          </div>
+                        )}
+                        <div className="min-w-0">
+                          <p className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                            {paymentProof.name}
+                          </p>
+                          <p className="mt-1 text-[11px] text-slate-500 truncate">
+                            Ukuran: {paymentProof.size} &bull; Diunggah: {paymentProof.uploadedAt}
+                          </p>
+                          <p className="mt-0.5 text-[10px] text-emerald-700 dark:text-emerald-300 font-semibold">
+                            ✓ Berkas siap divalidasi ke rekening BSI Ka Fatkhan
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2 shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => setPreviewModalItem({ title: 'Bukti Transfer Pembayaran', url: paymentProof.url, type: paymentProof.type, name: paymentProof.name })}
+                          className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 dark:border-white/10 dark:bg-white/5 dark:text-white"
+                        >
+                          <Eye size={13} /> Lihat
+                        </button>
+                        <label
+                          htmlFor="payment-proof-upload"
+                          className="flex cursor-pointer items-center gap-1.5 rounded-xl border border-brand-200 bg-brand-50 px-3 py-1.5 text-xs font-semibold text-brand-700 hover:bg-brand-100 dark:border-brand-900/50 dark:bg-brand-950/40 dark:text-brand-300"
+                        >
+                          <UploadCloud size={13} /> Ganti
+                        </label>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setPaymentProof(null)
+                            onNotify('Bukti transfer berhasil dihapus.')
+                          }}
+                          className="flex items-center gap-1.5 rounded-xl border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-700 hover:bg-rose-100 dark:border-rose-900/40 dark:bg-rose-950/30 dark:text-rose-300"
+                        >
+                          <Trash2 size={13} /> Hapus
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -1014,6 +1202,60 @@ export function ApplicantPortalPage({
         transaction={transaction}
         onNotify={onNotify}
       />
+
+      {/* File Preview Modal */}
+      {previewModalItem && (
+        <Modal
+          isOpen={Boolean(previewModalItem)}
+          onClose={() => setPreviewModalItem(null)}
+          title={`Pratinjau: ${previewModalItem.title}`}
+          subtitle={`Nama file: ${previewModalItem.name}`}
+          maxWidth="max-w-3xl"
+        >
+          <div className="py-2 space-y-4">
+            {previewModalItem.type?.startsWith('image/') || previewModalItem.name?.match(/\.(jpg|jpeg|png)$/i) ? (
+              <div className="overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 dark:border-white/10 dark:bg-black/20 p-2 text-center">
+                <img
+                  src={previewModalItem.url}
+                  alt={previewModalItem.name}
+                  className="max-h-[65vh] w-auto mx-auto rounded-xl object-contain shadow-sm"
+                />
+              </div>
+            ) : (
+              <div className="overflow-hidden rounded-2xl border border-slate-200 dark:border-white/10">
+                <iframe
+                  src={previewModalItem.url}
+                  title="PDF Preview"
+                  className="w-full h-[65vh] rounded-2xl bg-white"
+                />
+              </div>
+            )}
+
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-slate-100 dark:border-white/10">
+              <span className="text-xs text-slate-500">
+                Format file: PDF / Gambar (PNG, JPG)
+              </span>
+              <div className="flex gap-2">
+                <a
+                  href={previewModalItem.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/10 dark:bg-white/5 dark:text-white"
+                >
+                  <ExternalLink size={14} /> Buka di Tab Baru
+                </a>
+                <button
+                  type="button"
+                  onClick={() => setPreviewModalItem(null)}
+                  className="rounded-xl bg-brand-500 px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-brand-600"
+                >
+                  Tutup Pratinjau
+                </button>
+              </div>
+            </div>
+          </div>
+        </Modal>
+      )}
     </div>
   )
 }

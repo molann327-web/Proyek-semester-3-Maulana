@@ -12,7 +12,7 @@ import {
   Clock,
   Plus
 } from 'lucide-react'
-import { mockFaqs, mockChatMessages, mockHelpdeskTickets } from '../../data/mockHelpdesk'
+import { mockFaqs, mockChatMessages, mockHelpdeskTickets, generateSmartHelpdeskReply } from '../../data/mockHelpdesk'
 import { StatusBadge } from '../../components/common/StatusBadge'
 import { Modal } from '../../components/common/Modal'
 
@@ -32,30 +32,33 @@ export function HelpdeskPage({ onNotify }) {
 
   const handleSendChat = (e) => {
     e.preventDefault()
-    if (!chatInput.trim()) return
+    const questionText = chatInput.trim()
+    if (!questionText) return
 
     const userMsg = {
       id: Date.now(),
       sender: 'user',
-      text: chatInput,
+      text: questionText,
       time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
     }
 
     setChatMessages((prev) => [...prev, userMsg])
     setChatInput('')
 
-    // Simulated automated assistant response
+    // Generate responsive contextual reply matching the user's specific question
+    const replyText = generateSmartHelpdeskReply(questionText)
+
     setTimeout(() => {
       const staffReply = {
         id: Date.now() + 1,
         sender: 'staff',
-        name: 'Ustadzah Fitria (Panitia PPDB)',
-        text: 'Terima kasih atas pesan Anda. Pertanyaan Anda telah dicatat oleh sistem helpdesk Darul Haromain. Untuk bantuan berkas darurat, Anda juga dapat menghubungi sekretariat di jam kerja (08.00 - 15.00 WIB).',
+        name: 'Ustadzah Fitria (Panitia Helpdesk)',
+        text: replyText,
         time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
       }
       setChatMessages((prev) => [...prev, staffReply])
-      onNotify('Balasan simulasi panitia diterima di ruang konsultasi')
-    }, 1200)
+      onNotify('Panitia telah membalas pertanyaan Anda di ruang konsultasi')
+    }, 700)
   }
 
   const handleCreateTicket = (e) => {
@@ -206,7 +209,7 @@ export function HelpdeskPage({ onNotify }) {
                         : 'rounded-tl-xs bg-white text-slate-800 dark:bg-white/10 dark:text-white'
                     }`}
                   >
-                    <p>{msg.text}</p>
+                    <p className="whitespace-pre-line">{msg.text}</p>
                     <p
                       className={`mt-1 text-right text-[9px] ${
                         isUser ? 'text-white/70' : 'text-slate-400'
